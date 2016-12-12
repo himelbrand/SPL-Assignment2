@@ -1,6 +1,7 @@
 package bgu.spl.a2;
 
 import java.awt.*;
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 
 /**
@@ -19,15 +20,13 @@ import java.util.LinkedList;
  */
 public class Deferred<T> {
 
-    public boolean isResolved;
-    public T valueToReturn = null;
-    public LinkedList<Event>subscribers = new LinkedList<Event>();
     /**
      *
      * @return the resolved value if such exists (i.e., if this object has been
      * {@link #resolve(java.lang.Object)}ed yet
      * @throws IllegalStateException in the case where this method is called and
      * this object is not yet resolved
+     *
      */
     public T get() {
         //TODO: replace method body with real implementation

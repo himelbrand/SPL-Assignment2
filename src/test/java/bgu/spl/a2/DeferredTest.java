@@ -4,6 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 /**
@@ -12,12 +14,21 @@ import static org.junit.Assert.*;
 public class DeferredTest {
 
 
-    private  Deferred<Task<Runnable>> deferredObject;
-    private Task<Runnable> objectToResolve;
+    private  Deferred<Integer> deferredObject;
+    private Integer valueToResolve;
+    private Runnable callBack;
+    private int testCallBackCounter;
 
     @Before
     public void setUp() throws Exception {
         this.deferredObject = createDeferred();
+        this.valueToResolve = 100;
+        this.testCallBackCounter = 1;
+
+        this.callBack = () ->{
+            this.testCallBackCounter++;
+        };
+
     }
 
     /**
@@ -26,8 +37,9 @@ public class DeferredTest {
      *
      * @return a {@link Deferred} instance.
      */
-    protected Deferred createDeferred() {
-        return new Deferred<Task<Runnable>>();
+    private Deferred<Integer> createDeferred() {
+
+        return new Deferred<Integer>();
     }
 
 
@@ -40,18 +52,12 @@ public class DeferredTest {
      * after new {@link bgu.spl.a2.Deferred} is create , no resolved value  should be exist
      */
 
-    /**
-     * Test method for {@link bgu.spl.a2.Deferred#get()}:
-     * Before object is resolved  ,{@link bgu.spl.a2.Deferred#valueToReturn} is null
-     * After object is resolved  ,{@link bgu.spl.a2.Deferred#valueToReturn} is not null
-     */
-
     @Test
     public void testGet() throws Exception {
 
-        assertNull(deferredObject.valueToReturn);
-        deferredObject.resolve(objectToResolve);
-        assertNotNull(deferredObject.valueToReturn);
+        assertNull(deferredObject.get());
+        deferredObject.resolve(valueToResolve);
+        assertEquals(deferredObject.get(),valueToResolve);
     }
 
     /**
@@ -60,9 +66,8 @@ public class DeferredTest {
      */
     @Test public void testGetException() {
         try {
-
-            deferredObject.resolve(objectToResolve);
-            fail("Exception expected!");
+            deferredObject.resolve(valueToResolve);
+            fail("Exception expected! for testGetException");
         }catch(Exception e){
             //test pass
         }
@@ -78,9 +83,9 @@ public class DeferredTest {
      */
     @Test
     public void testIsResolved() throws Exception {
-        assertFalse(deferredObject.isResolved);
-        deferredObject.resolve(objectToResolve);
-        assertTrue(deferredObject.isResolved);
+        assertFalse(deferredObject.isResolved());
+        deferredObject.resolve(valueToResolve);
+        assertTrue(deferredObject.isResolved());
     }
 
 
@@ -88,31 +93,51 @@ public class DeferredTest {
 
     @Test
     public void testResolve() throws Exception {
-        assertNull(deferredObject.valueToReturn);
-        deferredObject.resolve(objectToResolve);
-        assertEquals(deferredObject.valueToReturn,deferredObject.get());
+        deferredObject.resolve(valueToResolve);
+        assertEquals(deferredObject.get(),valueToResolve);
     }
 
+
     @Test
-    public void testResolveExeption()  {
-        deferredObject.resolve(objectToResolve);
+    public void testResolveException()  {
+        deferredObject.resolve(valueToResolve);
             try{
-                deferredObject.resolve(objectToResolve);
-                fail("Exception expected!");
+                deferredObject.resolve(valueToResolve);
+                fail("Exception expected! for testResolveException");
             }catch(Exception e){
                 //test pass
             }
         }
 
+    /**
+     * Test method for {@link bgu.spl.a2.Deferred#whenResolved(Runnable)}:
+     * Before object is resolved  {@link bgu.spl.a2.Deferred#isResolved} is false
+     * After object is resolved  {@link bgu.spl.a2.Deferred#isResolved} is true
+     */
+    @Test
+    public void testWhenResolved() throws Exception {
+        deferredObject.whenResolved(callBack);
+        assertEquals(testCallBackCounter,1);
+        deferredObject.resolve(valueToResolve);
+        assertEquals(testCallBackCounter,2);
+        deferredObject.whenResolved(callBack);
+        assertEquals(testCallBackCounter,2);
+    }
+
 
     @Test
-    public void whenResolved() throws Exception {
-
+    public void testOnResolvedObjectWhenResolved() throws Exception {
+        deferredObject.resolve(valueToResolve);
+        deferredObject.whenResolved(callBack);
+        assertEquals(testCallBackCounter,2);
     }
 
     @After
     public void tearDown() throws Exception {
         assertNull(deferredObject);
+        assertNull(callBack);
+        assertNull(valueToResolve);
+        assertNull(testCallBackCounter);
     }
 
 }
