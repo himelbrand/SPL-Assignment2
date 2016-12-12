@@ -46,7 +46,7 @@ public class DeferredTest {
 
 
 
- 
+
     /**
      * Test method for {@link bgu.spl.a2.Deferred#get()}:
      * after new {@link bgu.spl.a2.Deferred} is create , no resolved value  should be exist
