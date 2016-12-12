@@ -1,5 +1,8 @@
 package bgu.spl.a2;
 
+import java.awt.*;
+import java.util.LinkedList;
+
 /**
  * this class represents a deferred result i.e., an object that eventually will
  * be resolved to hold a result of some operation, the class allows for getting
@@ -17,7 +20,8 @@ package bgu.spl.a2;
 public class Deferred<T> {
 
     public boolean isResolved;
-    public Object valueToReturn = null;
+    public T valueToReturn = null;
+    public LinkedList<Event>subscribers = new LinkedList<Event>();
     /**
      *
      * @return the resolved value if such exists (i.e., if this object has been

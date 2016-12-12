@@ -13,7 +13,7 @@ public class DeferredTest {
 
 
     private  Deferred<Task<Runnable>> deferredObject;
-    private java.lang.Object objectToResolve;
+    private Task<Runnable> objectToResolve;
 
     @Before
     public void setUp() throws Exception {
@@ -27,8 +27,11 @@ public class DeferredTest {
      * @return a {@link Deferred} instance.
      */
     protected Deferred createDeferred() {
-        return new Deferred();
+        return new Deferred<Task<Runnable>>();
     }
+
+
+
 
 
 
@@ -37,19 +40,23 @@ public class DeferredTest {
      * after new {@link bgu.spl.a2.Deferred} is create , no resolved value  should be exist
      */
 
+    /**
+     * Test method for {@link bgu.spl.a2.Deferred#get()}:
+     * Before object is resolved  ,{@link bgu.spl.a2.Deferred#valueToReturn} is null
+     * After object is resolved  ,{@link bgu.spl.a2.Deferred#valueToReturn} is not null
+     */
+
     @Test
     public void testGet() throws Exception {
 
         assertNull(deferredObject.valueToReturn);
         deferredObject.resolve(objectToResolve);
-        assertNotNull(deferredObject.va);
+        assertNotNull(deferredObject.valueToReturn);
     }
 
     /**
-     * Test method for {@link bgu.spl.a2.Deferred#get()}.
-     * This is a negative test - cause an exception to be thrown.
-     * We verify that the OUT fails when we invoke it without keeping the pre-condition.
-     * When we invoke a method without keeping the pre-condition, we expect the method to throw an exception.
+     * Test method for {@link bgu.spl.a2.Deferred#get()}:
+     * Before object is resolved  ,{@link bgu.spl.a2.Deferred#get()} through exception
      */
     @Test public void testGetException() {
         try {
@@ -62,31 +69,41 @@ public class DeferredTest {
 
     }
 
+
+
     /**
-     * Test method for {@link Deferred#isResolved()}.
+     * Test method for {@link bgu.spl.a2.Deferred#isResolved()}:
+     * Before object is resolved  {@link bgu.spl.a2.Deferred#isResolved} is false
+     * After object is resolved  {@link bgu.spl.a2.Deferred#isResolved} is true
      */
     @Test
     public void testIsResolved() throws Exception {
-        assertTrue(deferredObject.resolve(objectToResolve));
+        assertFalse(deferredObject.isResolved);
+        deferredObject.resolve(objectToResolve);
+        assertTrue(deferredObject.isResolved);
     }
 
-    @Test(expected=Exception.class)
-    public void resolve() throws Exception {
 
+
+
+    @Test
+    public void testResolve() throws Exception {
+        assertNull(deferredObject.valueToReturn);
+        deferredObject.resolve(objectToResolve);
+        assertEquals(deferredObject.valueToReturn,deferredObject.get());
     }
 
     @Test
     public void testResolveExeption()  {
-        if(deferredObject.isResolved()){
+        deferredObject.resolve(objectToResolve);
             try{
-                deferredObject.resolve(Object val);
+                deferredObject.resolve(objectToResolve);
                 fail("Exception expected!");
             }catch(Exception e){
                 //test pass
             }
         }
 
-    }
 
     @Test
     public void whenResolved() throws Exception {
