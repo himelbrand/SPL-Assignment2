@@ -16,6 +16,8 @@ package bgu.spl.a2;
  */
 public class Deferred<T> {
 
+    public boolean isResolved;
+    public Object valueToReturn = null;
     /**
      *
      * @return the resolved value if such exists (i.e., if this object has been

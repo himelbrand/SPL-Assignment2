@@ -15,6 +15,7 @@ import java.util.Collection;
  */
 public abstract class Task<R> {
 
+
     /**
      * start handling the task - note that this method is protected, a handler
      * cannot call it directly but instead must use the
