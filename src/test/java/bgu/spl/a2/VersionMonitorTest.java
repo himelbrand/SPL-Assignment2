@@ -30,6 +30,8 @@ public class VersionMonitorTest {
         });
         t2 = new Thread(()->versionMonitor.inc());
     }
+
+
     @After
     public void tearDown() throws Exception {
         System.out.println("Running: tearDown");
