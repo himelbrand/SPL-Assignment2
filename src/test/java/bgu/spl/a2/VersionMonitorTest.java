@@ -3,9 +3,9 @@ package bgu.spl.a2;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static java.lang.Thread.sleep;
+import org.junit.rules.Timeout;
 import static org.junit.Assert.*;
+
 
 /**
  * Created by himelbrand on 12/11/16.
@@ -24,6 +24,8 @@ public class VersionMonitorTest {
                 versionMonitor.await(versionMonitor.getVersion());
             }catch (InterruptedException e){
                 assertNotEquals(startVersion,versionMonitor.getVersion());
+            }catch (Exception e){
+                fail("unexpected exception");
             }
         });
         t2 = new Thread(()->versionMonitor.inc());
@@ -32,7 +34,10 @@ public class VersionMonitorTest {
     public void tearDown() throws Exception {
         System.out.println("Running: tearDown");
         versionMonitor=null;
+        t1.interrupt();
+        t2.interrupt();
         assertNull(versionMonitor);
+
     }
     /**
      * This creates the object under test.
@@ -63,7 +68,7 @@ public class VersionMonitorTest {
         assertEquals(start+3,versionMonitor.getVersion());
     }
     /**
-     * Test Method for {@link VersionMonitor#await(int)}
+     * Test Method for {@link VersionMonitor#await(int)} waiting until interrupted
      *
      */
     @Test
@@ -76,15 +81,14 @@ public class VersionMonitorTest {
         }
     }
     /**
-     * Test Method for {@link VersionMonitor#await(int)}
+     * Test Method for {@link VersionMonitor#await(int)} waits because the version never increased
      *
      */
     @Test
-    public void testAwaitWaitForEver() throws Exception{
+    public void testAwaitNotInterrupted() throws Exception{
         t1.start();
-        Thread.sleep(10000);//limited to 10 seconds and not forever
+        Timeout.seconds(5);
         assertEquals(Thread.State.WAITING,t1.getState());
-        t1.interrupt();
     }
 
 }
