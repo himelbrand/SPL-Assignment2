@@ -1,5 +1,7 @@
 package bgu.spl.a2;
-
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 /**
  * represents a work stealing thread pool - to understand what this class does
  * please refer to your assignment.
@@ -11,6 +13,11 @@ package bgu.spl.a2;
  * methods
  */
 public class WorkStealingThreadPool {
+
+    protected Processor[] myProcessorArray;
+    protected Deque[] myDequeTasksArray;
+    protected  ExecutorService myExecutor;
+    protected  VersionMonitor myVersionmonitor = new VersionMonitor();
 
     /**
      * creates a {@link WorkStealingThreadPool} which has nthreads
@@ -25,8 +32,15 @@ public class WorkStealingThreadPool {
      * thread pool
      */
     public WorkStealingThreadPool(int nthreads) {
+        myProcessorArray = new Processor[nthreads];
+        myDequeTasksArray = new ArrayDeque[nthreads];
+
+        for(int i=0;i<nthreads;i++){
+            myProcessorArray[i] = new Processor(i,this);
+            myExecutor = Executors.newFixedThreadPool(nthreads);
+        }
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        //throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -35,8 +49,10 @@ public class WorkStealingThreadPool {
      * @param task the task to execute
      */
     public void submit(Task<?> task) {
+        myDequeTasksArray[0].add(task);
+        myVersionmonitor.inc();
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        //throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -52,16 +68,20 @@ public class WorkStealingThreadPool {
      * shutdown the queue is itself a processor of this queue
      */
     public void shutdown() throws InterruptedException {
+        myExecutor.shutdown();
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        //throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
      * start the threads belongs to this thread pool
      */
     public void start() {
+        for(int i=0;i<myProcessorArray.length;i++){
+            myExecutor.submit(myProcessorArray[i]);
+        }
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        //throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
 }
