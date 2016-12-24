@@ -16,19 +16,35 @@ import java.util.concurrent.Semaphore;
  */
 public class WorkStealingThreadPool {
 
-     Processor[] myProcessorArray;
-     ConcurrentLinkedDeque<Task<?>>[] myDequeTasksArray;
-     Thread[] myThreadsArray;
-      VersionMonitor myVersionmonitor = new VersionMonitor();
+    private Processor[] myProcessorArray;
+    private  ConcurrentLinkedDeque<Task<?>>[] myDequeTasksArray;
+    private  Thread[] myThreadsArray;
+    VersionMonitor myVersionMonitor = new VersionMonitor();
 
-    private boolean fetchTasks(int processorId){
-        int queueId = (processorId +1)%myDequeTasksArray.length;
-        int queueVictemSize = myDequeTasksArray[queueId].size() / 2;
-        for(int i=0; i<queueVictemSize;i++){
-          //  synchronized (  myDequeTasksArray[queueId].pollLast())
+    private boolean stealTasks(int processorId){
+        boolean myCheckIfSteal = false;
+        int queueIdVictim = (processorId +1)%myDequeTasksArray.length;
+        int queueVictemSize;
+        while(queueIdVictim != processorId) {
 
+            queueVictemSize = myDequeTasksArray[queueIdVictim].size() / 2;
+
+            for (int i = 0; i < queueVictemSize; i++) {
+
+                Task<?> myTask = myDequeTasksArray[queueIdVictim].pollLast();
+                if(myTask != null) {
+                    myDequeTasksArray[processorId].addFirst(myTask);
+                    myCheckIfSteal = true;
+                }else{
+                    break;
+                }
+            }
+            if(myCheckIfSteal) {
+                break;
+            }
+            queueIdVictim = (queueIdVictim + 1) % myDequeTasksArray.length;
         }
-
+        return myCheckIfSteal;
     }
     /**
      * creates a {@link WorkStealingThreadPool} which has nthreads
@@ -61,14 +77,9 @@ public class WorkStealingThreadPool {
      * @param task the task to execute
      */
     public void submit(Task<?> task) {
-        myDequeTasksArray[0].add(task);
-
-        try {
-            myVersionmonitor.sema.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        myVersionmonitor.inc();
+        Random myRandom = new Random(myProcessorArray.length);
+        myDequeTasksArray[myRandom.nextInt()].add(task);
+        myVersionMonitor.inc();
         //TODO: replace method body with real implementation
         throw new UnsupportedOperationException("Not Implemented Yet.");
     }

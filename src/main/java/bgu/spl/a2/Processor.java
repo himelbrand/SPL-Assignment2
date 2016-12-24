@@ -46,7 +46,7 @@ public class Processor implements Runnable {
             if(currentTask != null){
                 currentTask.handle(this);
             }else{
-                while(!pool.fetchTasks[id]){
+                if(!pool.stealTasks(id)){
                     try {
                         pool.myVersionmonitor.await(pool.myVersionmonitor.getVersion());
                     } catch (InterruptedException e) {
