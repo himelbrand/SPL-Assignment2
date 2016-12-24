@@ -1,5 +1,8 @@
 package bgu.spl.a2;
 
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadFactory;
+
 /**
  * Describes a monitor that supports the concept of versioning - its idea is
  * simple, the monitor has a version number which you can receive via the method
@@ -18,18 +21,37 @@ package bgu.spl.a2;
  */
 public class VersionMonitor {
 
+    private int currentVersion;
+    private Object lock1;
+
     public int getVersion() {
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        return this.currentVersion;
+       // throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     public void inc() {
+        currentVersion++;
+        lock1.notify();
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+       // throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     public void await(int version) throws InterruptedException {
+
+        synchronized (lock1){
+            System.out.println("Processor " + Thread.currentThread().getName() +" took the key");
+            while(version <= getVersion())
+            {
+                System.out.println("Processor " + Thread.currentThread().getName() +" release the key");
+                System.out.println("Processor " + Thread.currentThread().getName() +" is enter waiting.");
+                lock1.wait();
+                System.out.println("Processor " + Thread.currentThread().getName() +" is exit waiting.");
+            }
+            System.out.println("Processor " + Thread.currentThread().getName() +" release the key");
+
+        }
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+     //   throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 }

@@ -2,6 +2,8 @@ package bgu.spl.a2;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Semaphore;
 /**
  * represents a work stealing thread pool - to understand what this class does
  * please refer to your assignment.
@@ -14,11 +16,20 @@ import java.util.concurrent.Executors;
  */
 public class WorkStealingThreadPool {
 
-    protected Processor[] myProcessorArray;
-    protected Deque[] myDequeTasksArray;
-    protected  ExecutorService myExecutor;
-    protected  VersionMonitor myVersionmonitor = new VersionMonitor();
+     Processor[] myProcessorArray;
+     ConcurrentLinkedDeque<Task<?>>[] myDequeTasksArray;
+     Thread[] myThreadsArray;
+      VersionMonitor myVersionmonitor = new VersionMonitor();
 
+    private boolean fetchTasks(int processorId){
+        int queueId = (processorId +1)%myDequeTasksArray.length;
+        int queueVictemSize = myDequeTasksArray[queueId].size() / 2;
+        for(int i=0; i<queueVictemSize;i++){
+          //  synchronized (  myDequeTasksArray[queueId].pollLast())
+
+        }
+
+    }
     /**
      * creates a {@link WorkStealingThreadPool} which has nthreads
      * {@link Processor}s. Note, threads should not get started until calling to
@@ -33,14 +44,15 @@ public class WorkStealingThreadPool {
      */
     public WorkStealingThreadPool(int nthreads) {
         myProcessorArray = new Processor[nthreads];
-        myDequeTasksArray = new ArrayDeque[nthreads];
+        myThreadsArray = new Thread[nthreads];
+        myDequeTasksArray = new ConcurrentLinkedDeque[nthreads];
 
         for(int i=0;i<nthreads;i++){
             myProcessorArray[i] = new Processor(i,this);
-            myExecutor = Executors.newFixedThreadPool(nthreads);
+            myThreadsArray[i] = new Thread(myProcessorArray[i]);
         }
         //TODO: replace method body with real implementation
-        //throw new UnsupportedOperationException("Not Implemented Yet.");
+        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -50,9 +62,15 @@ public class WorkStealingThreadPool {
      */
     public void submit(Task<?> task) {
         myDequeTasksArray[0].add(task);
+
+        try {
+            myVersionmonitor.sema.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         myVersionmonitor.inc();
         //TODO: replace method body with real implementation
-        //throw new UnsupportedOperationException("Not Implemented Yet.");
+        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -68,9 +86,11 @@ public class WorkStealingThreadPool {
      * shutdown the queue is itself a processor of this queue
      */
     public void shutdown() throws InterruptedException {
-        myExecutor.shutdown();
+        for(int i=0;i<myProcessorArray.length;i++){
+            myThreadsArray[i].interrupt();
+        }
         //TODO: replace method body with real implementation
-        //throw new UnsupportedOperationException("Not Implemented Yet.");
+        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -78,10 +98,10 @@ public class WorkStealingThreadPool {
      */
     public void start() {
         for(int i=0;i<myProcessorArray.length;i++){
-            myExecutor.submit(myProcessorArray[i]);
+            myThreadsArray[i].start();
         }
         //TODO: replace method body with real implementation
-        //throw new UnsupportedOperationException("Not Implemented Yet.");
+        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
 }

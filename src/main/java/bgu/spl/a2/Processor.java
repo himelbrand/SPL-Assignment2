@@ -41,6 +41,21 @@ public class Processor implements Runnable {
 
     @Override
     public void run() {
+        while(true){
+            Task<?> currentTask = pool.myDequeTasksArray[id].pollFirst();
+            if(currentTask != null){
+                currentTask.handle(this);
+            }else{
+                while(!pool.fetchTasks[id]){
+                    try {
+                        pool.myVersionmonitor.await(pool.myVersionmonitor.getVersion());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        }
         //TODO: replace method body with real implementation
         throw new UnsupportedOperationException("Not Implemented Yet.");
     }
