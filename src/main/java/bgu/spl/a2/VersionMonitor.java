@@ -22,8 +22,7 @@ import java.util.concurrent.ThreadFactory;
 public class VersionMonitor {
 
     private int currentVersion;
-    private Object lock1;
-
+    private final  Object lock1 = new Object();
     public int getVersion() {
         //TODO: replace method body with real implementation
         return this.currentVersion;

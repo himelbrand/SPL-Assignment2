@@ -17,19 +17,19 @@ import java.util.concurrent.Semaphore;
 public class WorkStealingThreadPool {
 
     private Processor[] myProcessorArray;
-    private  ConcurrentLinkedDeque<Task<?>>[] myDequeTasksArray;
+    ConcurrentLinkedDeque<Task<?>>[] myDequeTasksArray;
     private  Thread[] myThreadsArray;
     VersionMonitor myVersionMonitor = new VersionMonitor();
 
-    private boolean stealTasks(int processorId){
+    boolean stealTasks(int processorId){
         boolean myCheckIfSteal = false;
         int queueIdVictim = (processorId +1)%myDequeTasksArray.length;
-        int queueVictemSize;
+        int queueVictimSize;
         while(queueIdVictim != processorId) {
 
-            queueVictemSize = myDequeTasksArray[queueIdVictim].size() / 2;
+            queueVictimSize = myDequeTasksArray[queueIdVictim].size() / 2;
 
-            for (int i = 0; i < queueVictemSize; i++) {
+            for (int i = 0; i < queueVictimSize; i++) {
 
                 Task<?> myTask = myDequeTasksArray[queueIdVictim].pollLast();
                 if(myTask != null) {

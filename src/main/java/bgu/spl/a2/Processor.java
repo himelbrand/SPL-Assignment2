@@ -48,7 +48,7 @@ public class Processor implements Runnable {
             }else{
                 if(!pool.stealTasks(id)){
                     try {
-                        pool.myVersionmonitor.await(pool.myVersionmonitor.getVersion());
+                        pool.myVersionMonitor.await(pool.myVersionMonitor.getVersion());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -57,7 +57,7 @@ public class Processor implements Runnable {
             }
         }
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+      //  throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
 }
