@@ -21,6 +21,8 @@ public abstract class Task<R> {
 
     Runnable taskCallBack;
 
+    private boolean taskStarted = false;
+
     private Processor myProcessor;
     /**
      * start handling the task - note that this method is protected, a handler
@@ -46,8 +48,12 @@ public abstract class Task<R> {
      */
     /*package*/ final void handle(Processor handler) {
 
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        if(!taskStarted){
+            taskStarted = true;
+            start();
+        }else{
+            taskContinue();
+        }
     }
 
     protected void setProcessor(Processor processor){
@@ -94,8 +100,7 @@ public abstract class Task<R> {
     protected final void taskContinue(){
         spwanTasksCount--;
         if(spwanTasksCount <= 0){
-            Thread taskCallBackThread = new Thread(taskCallBack);
-            taskCallBackThread.start();
+            myProcessor.addTask(this);
         }else{
             // PUT ON HOLD
         }
