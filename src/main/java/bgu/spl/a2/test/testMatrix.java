@@ -3,20 +3,21 @@ package bgu.spl.a2.test;
 import bgu.spl.a2.WorkStealingThreadPool;
 
 import java.util.Random;
+import java.util.StringJoiner;
 
 /**
  * Created by himelbrand on 12/25/16.
  */
 public class testMatrix {
-    public static void Main() throws Exception{
+    public static void main(String args[]) throws Exception{
         WorkStealingThreadPool pool = new WorkStealingThreadPool(4);
         int[][] array = new int[5][10];
         createMatrix(array);
         SumMatrix myTask = new SumMatrix(array);
         pool.start();
-        pool.submit(myTask);
+       // pool.submit(myTask);
 //some stuff
-        pool.shutdown(); //stopping all the threads
+        //pool.shutdown(); //stopping all the threads
     }
     private static void createMatrix(int[][] array){
         Random random=new Random();

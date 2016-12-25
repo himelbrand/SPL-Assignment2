@@ -66,9 +66,10 @@ public class WorkStealingThreadPool {
         for(int i=0;i<nthreads;i++){
             myProcessorArray[i] = new Processor(i,this);
             myThreadsArray[i] = new Thread(myProcessorArray[i]);
+            myDequeTasksArray[i] = new ConcurrentLinkedDeque<>();
         }
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+//        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -77,13 +78,11 @@ public class WorkStealingThreadPool {
      * @param task the task to execute
      */
     public void submit(Task<?> task) {
-        Random myRandom = new Random(myProcessorArray.length);
-        int myRandomNumber = myRandom.nextInt();
+        Random myRandom = new Random();
+        int myRandomNumber = myRandom.nextInt(myProcessorArray.length);
         task.setProcessor(myProcessorArray[myRandomNumber]);
         myDequeTasksArray[myRandomNumber].add(task);
         myVersionMonitor.inc();
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -103,7 +102,7 @@ public class WorkStealingThreadPool {
             myThreadsArray[i].interrupt();
         }
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+      //  throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -114,7 +113,7 @@ public class WorkStealingThreadPool {
             myThreadsArray[i].start();
         }
         //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+       // throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
 }
