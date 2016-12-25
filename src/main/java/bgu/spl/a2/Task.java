@@ -1,5 +1,7 @@
 package bgu.spl.a2;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -52,14 +54,14 @@ public abstract class Task<R> {
      */
     /*package*/ final void handle(Processor handler) {
 
+        myProcessor = handler;
         if(!taskStarted){
             taskStarted = true;
-            System.out.println(taskName + " started");
+            System.out.println(taskName + " started by thread-" + myProcessor.getId());
             start();
         }else{
-            System.out.println("call back was called");
+            System.out.println(taskName + " continued by thread-" + myProcessor.getId());
             taskCallBack.run();
-            System.out.println("call back ended called");
         }
     }
 
@@ -77,9 +79,9 @@ public abstract class Task<R> {
 
         spwanTasksCount += task.length;
         for(Task<?> spawnTask:task){
-            spawnTask.taskName = taskName + "__" +i;
+            spawnTask.taskName = taskName + "." +i;
             i++;
-            System.out.println(taskName + " task create the following Task: "+ spawnTask.taskName+ "     Task created");
+            System.out.println(taskName + " spawned "+ spawnTask.taskName);
             spawnTask.setProcessor(myProcessor);
             myProcessor.addTask(spawnTask);
         }
@@ -113,9 +115,9 @@ public abstract class Task<R> {
 
     protected final void whenSubTaskComplete(){
         spwanTasksCount--;
-        System.out.println("spwanTasksCount  is " + spwanTasksCount);
+       // System.out.println("spwanTasksCount  is " + spwanTasksCount);
         if(spwanTasksCount <= 0){
-            System.out.println(taskName +" retured to queue");
+            System.out.println(taskName +" returned to queue");
             myProcessor.addTask(this);
             myProcessor.waitingTask.remove(this);
         }
@@ -127,6 +129,7 @@ public abstract class Task<R> {
      * @param result - the task calculated result
      */
     protected final void complete(R result) {
+       // System.out.println(taskName + " is completed !" + Arrays.toString((int[])result));
         myDeferred.resolve(result);
     }
 

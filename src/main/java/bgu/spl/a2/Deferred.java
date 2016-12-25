@@ -86,7 +86,6 @@ public class Deferred<T> {
      */
     public void whenResolved(Runnable callback) {
         this.callback=callback;
-        System.out.println("defered resolved");
         if(isResolved) {
             callback.run();
             this.callback=null;

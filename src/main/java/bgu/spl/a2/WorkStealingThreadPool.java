@@ -25,23 +25,24 @@ public class WorkStealingThreadPool {
         boolean myCheckIfSteal = false;
         int queueIdVictim = (processorId +1)%myDequeTasksArray.length;
         int queueVictimSize;
+        System.out.println(Thread.currentThread().getName() + "try to steal tasks");
         while(queueIdVictim != processorId) {
 
             queueVictimSize = myDequeTasksArray[queueIdVictim].size() / 2;
 
-            System.out.println("victim queue size is" + myDequeTasksArray[queueIdVictim].size());
             for (int i = 0; i < queueVictimSize; i++) {
 
                 Task<?> myTask = myDequeTasksArray[queueIdVictim].pollLast();
                 if(myTask != null) {
                     myDequeTasksArray[processorId].addFirst(myTask);
-                    System.out.println(myTask.taskName + " was taken from queue  " +queueIdVictim + " by queue " + processorId);
+                    System.out.println(myTask.taskName + " stolen from  Thread-" +queueIdVictim + " by  Thread-" + processorId);
                     myCheckIfSteal = true;
                 }else{
                     break;
                 }
             }
             if(myCheckIfSteal) {
+                System.out.println("Thread-" + processorId + " took " +myDequeTasksArray[processorId].size() + "tasks");
                 break;
             }
             queueIdVictim = (queueIdVictim + 1) % myDequeTasksArray.length;
@@ -103,10 +104,12 @@ public class WorkStealingThreadPool {
     public void shutdown() throws InterruptedException {
         for(int i=0;i<myProcessorArray.length;i++){
             myThreadsArray[i].interrupt();
+            myThreadsArray[i].interrupt();
         }
         //TODO: replace method body with real implementation
       //  throw new UnsupportedOperationException("Not Implemented Yet.");
     }
+
 
     /**
      * start the threads belongs to this thread pool

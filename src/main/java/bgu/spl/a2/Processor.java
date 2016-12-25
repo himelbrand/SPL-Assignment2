@@ -1,5 +1,7 @@
 package bgu.spl.a2;
 
+import com.sun.tools.classfile.Exceptions_attribute;
+
 import java.util.LinkedList;
 
 /**
@@ -18,7 +20,7 @@ public class Processor implements Runnable {
     private final WorkStealingThreadPool pool;
     private final int id;
      LinkedList<Task<?>> waitingTask;
-
+     private boolean running = true;
 
 
     /**
@@ -48,29 +50,35 @@ public class Processor implements Runnable {
         pool.myVersionMonitor.inc();
     }
 
+    int getId(){
+        return id;
+    }
+
     @Override
-    public void run() {
-        while(true){
+    public void run(){
+        while(running){
             Task<?> currentTask = pool.myDequeTasksArray[id].pollFirst();
-            System.out.println(Thread.currentThread().getName() + "   try to work");
+            System.out.println(Thread.currentThread().getName() + " try to work");
             if(currentTask != null){
                 waitingTask.addFirst(currentTask);
-                System.out.println(currentTask.taskName +" entered waiting");
+           //     System.out.println(currentTask.taskName +" entered waiting");
                 currentTask.handle(this);
             }else{
-                System.out.println(Thread.currentThread().getName() + "   try to steal tasks");
                 boolean tryToSteal = pool.stealTasks(id);
                 if(!tryToSteal) {
                     currentTask = pool.myDequeTasksArray[id].pollFirst();
                     if (currentTask != null) {
                         waitingTask.addFirst(currentTask);
-                        System.out.println(currentTask.taskName + " entered waiting");
+                     //   System.out.println(currentTask.taskName + " entered waiting");
                         currentTask.handle(this);
                     } else {
                         try {
                             pool.myVersionMonitor.await(pool.myVersionMonitor.getVersion());
-                        } catch (InterruptedException e) {
-                            System.out.println("Version monitor interrupted");
+
+                        } catch (Exception e) {
+
+                           running = false;
+
                         }
                     }
                 }

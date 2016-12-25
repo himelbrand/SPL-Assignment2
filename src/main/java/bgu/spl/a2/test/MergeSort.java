@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 
 public class MergeSort extends Task<int[]> {
 
@@ -26,10 +27,14 @@ public class MergeSort extends Task<int[]> {
     protected void start() {
 
         if (array.length > 1) {
-            int middle = (array.length - 1) / 2;
+            int middle = (array.length) / 2;
             // Below step sorts the left side of the array
             int[] array1 = Arrays.copyOfRange(array, 0, middle);
-            int[] array2 = Arrays.copyOfRange(array, middle + 1, array.length - 1);
+            int[] array2 = Arrays.copyOfRange(array, middle, array.length);
+
+          //  System.out.println(Arrays.toString(array1));
+          //  System.out.println(Arrays.toString(array2));
+
 
 
             MergeSort spwnTask1 = new MergeSort(array1);
@@ -40,15 +45,13 @@ public class MergeSort extends Task<int[]> {
             myCollection.add(spwnTask2);
 
             whenResolved(myCollection, () -> {
-                int[] arr =mergeArrays(myCollection.get(0).getResult().get(), myCollection.get(0).getResult().get());
-                for (int n:arr) {
-                    System.out.print(n);
-                }
-
+                int[] arr =mergeArrays(myCollection.get(0).getResult().get(), myCollection.get(1).getResult().get());
                     complete(arr);
 
             });
 
+        }else{
+            complete(array);
         }
 
 
@@ -57,30 +60,25 @@ public class MergeSort extends Task<int[]> {
     private int[] mergeArrays(int[] array1, int[] array2) {
 
         int[] newArray = new int[array1.length + array2.length];
-        int[] tempMergArr = new int[array1.length + array2.length];
-        int lowerIndex = 0;
-        int higherIndex = newArray.length - 1;
-        int middle = array1.length - 1;
 
-
-        for (int i = lowerIndex; i <= higherIndex; i++) {
-            tempMergArr[i] = newArray[i];
-        }
-        int i = lowerIndex;
-        int j = middle + 1;
-        int k = lowerIndex;
-        while (i <= middle && j <= higherIndex) {
-            if (tempMergArr[i] <= tempMergArr[j]) {
-                newArray[k] = tempMergArr[i];
+        int i=0,k=0,j =0;
+        while (i < array1.length && j < array2.length) {
+            if (array1[i] <= array2[j]) {
+                newArray[k] = array1[i];
                 i++;
             } else {
-                newArray[k] = tempMergArr[j];
+                newArray[k] = array2[j];
                 j++;
             }
             k++;
         }
-        while (i <= middle) {
-            newArray[k] = tempMergArr[i];
+        while (j < array2.length) {
+            newArray[k] = array2[j];
+            k++;
+            j++;
+        }
+        while (i < array1.length) {
+            newArray[k] = array1[i];
             k++;
             i++;
         }
@@ -90,23 +88,43 @@ public class MergeSort extends Task<int[]> {
 
 
     public static void main(String[] args) throws InterruptedException {
-        WorkStealingThreadPool pool = new WorkStealingThreadPool(4);
-        int n = 10; //you may check on different number of elements if you like
+         final WorkStealingThreadPool pool = new WorkStealingThreadPool(10);
+        int n = 10000; //you may check on different number of elements if you like
         int[] array = new Random().ints(n).toArray();
 
         MergeSort task = new MergeSort(array);
         task.taskName = "Task_0";
+        System.out.println(Arrays.toString(array));
         CountDownLatch l = new CountDownLatch(1);
+        long startTime =  System.currentTimeMillis();
         pool.start();
         pool.submit(task);
         task.getResult().whenResolved(() -> {
-            //warning - a large print!! - you can remove this line if you wish
             System.out.println(Arrays.toString(task.getResult().get()));
-            l.countDown();
-        });
+            int first = task.getResult().get()[0];
+            boolean check =false;
+            for(int i:task.getResult().get()){
+                if(i >= first)
+                {
+                    first=i;
+                }else
+                {
+                    check = true;
+                }
 
+
+
+            }
+            long endTime =  System.currentTimeMillis();
+            System.out.println((endTime - startTime));
+            System.out.println(check);
+            l.countDown();
+
+        });
         l.await();
-        pool.shutdown();
+            pool.shutdown();
+
+
     }
 
 }
