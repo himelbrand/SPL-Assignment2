@@ -2,6 +2,7 @@ package bgu.spl.a2;
 
 import java.awt.*;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 /**
@@ -60,12 +61,14 @@ public class Deferred<T> {
     public void resolve(T value) {
         if(isResolved)
             throw new IllegalStateException("Already resolved");
+        isResolved=true;
         this.result=value;
         if(callback!=null) {
             callback.run();
             callback = null;
         }
-        isResolved=true;
+
+
     }
 
     /**
@@ -83,6 +86,7 @@ public class Deferred<T> {
      */
     public void whenResolved(Runnable callback) {
         this.callback=callback;
+        System.out.println("defered resolved");
         if(isResolved) {
             callback.run();
             this.callback=null;

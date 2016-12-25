@@ -39,15 +39,16 @@ public class VersionMonitor {
     public void await(int version) throws InterruptedException {
 
         synchronized (lock1){
-            System.out.println("Processor " + Thread.currentThread().getName() +" took the key");
-            while(version <= getVersion())
+            //System.out.println("Processor " + Thread.currentThread().getName() +" took the key");
+            while(version == getVersion())
             {
-                System.out.println("Processor " + Thread.currentThread().getName() +" release the key");
-                System.out.println("Processor " + Thread.currentThread().getName() +" is enter waiting.");
+               // System.out.println("Processor " + Thread.currentThread().getName() + "version is " +version +  "   and general is "+ getVersion());
+              //  System.out.println("Processor " + Thread.currentThread().getName() +" release the key");
+                System.out.println( Thread.currentThread().getName() +" is enter waiting.");
                 lock1.wait();
-                System.out.println("Processor " + Thread.currentThread().getName() +" is exit waiting.");
+                System.out.println( Thread.currentThread().getName() +" is exit waiting.");
             }
-            System.out.println("Processor " + Thread.currentThread().getName() +" release the key");
+            //System.out.println("Processor " + Thread.currentThread().getName() +" release the key2");
 
         }
         //TODO: replace method body with real implementation

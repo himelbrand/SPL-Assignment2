@@ -15,6 +15,8 @@ public class SumRow extends Task<Integer> {
         int sum=0;
         for(int j=0 ;j<array[0].length;j++)
             sum+=array[r][j];
+
+        System.out.println(taskName +" result is " + sum + "                         ---------------");
         complete(sum);
     }
 }

@@ -52,16 +52,26 @@ public class Processor implements Runnable {
     public void run() {
         while(true){
             Task<?> currentTask = pool.myDequeTasksArray[id].pollFirst();
-            waitingTask.addFirst(currentTask);
-            System.out.println(Thread.currentThread().getName() + "   try to take a task");
+            System.out.println(Thread.currentThread().getName() + "   try to work");
             if(currentTask != null){
+                waitingTask.addFirst(currentTask);
+                System.out.println(currentTask.taskName +" entered waiting");
                 currentTask.handle(this);
             }else{
-                if(!pool.stealTasks(id)){
-                    try {
-                        pool.myVersionMonitor.await(pool.myVersionMonitor.getVersion());
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                System.out.println(Thread.currentThread().getName() + "   try to steal tasks");
+                boolean tryToSteal = pool.stealTasks(id);
+                if(!tryToSteal) {
+                    currentTask = pool.myDequeTasksArray[id].pollFirst();
+                    if (currentTask != null) {
+                        waitingTask.addFirst(currentTask);
+                        System.out.println(currentTask.taskName + " entered waiting");
+                        currentTask.handle(this);
+                    } else {
+                        try {
+                            pool.myVersionMonitor.await(pool.myVersionMonitor.getVersion());
+                        } catch (InterruptedException e) {
+                            System.out.println("Version monitor interrupted");
+                        }
                     }
                 }
 

@@ -29,11 +29,13 @@ public class WorkStealingThreadPool {
 
             queueVictimSize = myDequeTasksArray[queueIdVictim].size() / 2;
 
+            System.out.println("victim queue size is" + myDequeTasksArray[queueIdVictim].size());
             for (int i = 0; i < queueVictimSize; i++) {
 
                 Task<?> myTask = myDequeTasksArray[queueIdVictim].pollLast();
                 if(myTask != null) {
                     myDequeTasksArray[processorId].addFirst(myTask);
+                    System.out.println(myTask.taskName + " was taken from queue  " +queueIdVictim + " by queue " + processorId);
                     myCheckIfSteal = true;
                 }else{
                     break;
@@ -82,7 +84,7 @@ public class WorkStealingThreadPool {
         int myRandomNumber = myRandom.nextInt(myProcessorArray.length);
         task.setProcessor(myProcessorArray[myRandomNumber]);
         myDequeTasksArray[myRandomNumber].add(task);
-        System.out.println(myRandomNumber + " processor placed first task");
+        System.out.println(myRandomNumber + " processor placed first          @@@@@@@@@@@@@@s");
         myVersionMonitor.inc();
     }
 

@@ -15,7 +15,7 @@ import java.util.Collection;
  */
 public abstract class Task<R> {
 
-    Deferred<R> myDeferred = new Deferred<R>();
+    public Deferred<R> myDeferred = new Deferred<R>();
 
     volatile int spwanTasksCount = 0;
 
@@ -24,6 +24,10 @@ public abstract class Task<R> {
     private boolean taskStarted = false;
 
     private Processor myProcessor;
+
+    public String taskName;
+
+    volatile int i =0;
     /**
      * start handling the task - note that this method is protected, a handler
      * cannot call it directly but instead must use the
@@ -50,10 +54,12 @@ public abstract class Task<R> {
 
         if(!taskStarted){
             taskStarted = true;
+            System.out.println(taskName + " started");
             start();
-            System.out.println(Thread.currentThread().getName() + "    started");
         }else{
+            System.out.println("call back was called");
             taskCallBack.run();
+            System.out.println("call back ended called");
         }
     }
 
@@ -69,7 +75,11 @@ public abstract class Task<R> {
      */
     protected final void spawn(Task<?>... task) {
 
+        spwanTasksCount += task.length;
         for(Task<?> spawnTask:task){
+            spawnTask.taskName = taskName + "__" +i;
+            i++;
+            System.out.println(taskName + " task create the following Task: "+ spawnTask.taskName+ "     Task created");
             spawnTask.setProcessor(myProcessor);
             myProcessor.addTask(spawnTask);
         }
@@ -93,15 +103,19 @@ public abstract class Task<R> {
         Task<?> taskReference = this;
 
         for (Task<?> spawnTask:tasks) {
-                spawnTask.myDeferred.whenResolved(()->
-                        taskReference.whenSubTaskComplete()
-                );
+           // System.out.println("call back was registered to " + spawnTask.taskName);
+                spawnTask.myDeferred.whenResolved(()-> {
+                    taskReference.whenSubTaskComplete();
+                    System.out.println(spawnTask.taskName + " is resolved");
+                });
         }
     }
 
     protected final void whenSubTaskComplete(){
         spwanTasksCount--;
+        System.out.println("spwanTasksCount  is " + spwanTasksCount);
         if(spwanTasksCount <= 0){
+            System.out.println(taskName +" retured to queue");
             myProcessor.addTask(this);
             myProcessor.waitingTask.remove(this);
         }
@@ -120,7 +134,6 @@ public abstract class Task<R> {
      * @return this task deferred result
      */
     public final Deferred<R> getResult() {
-        this.myDeferred.get();
         return this.myDeferred;
     }
 
