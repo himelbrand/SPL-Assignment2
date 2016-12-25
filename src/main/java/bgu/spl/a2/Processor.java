@@ -1,5 +1,7 @@
 package bgu.spl.a2;
 
+import java.util.LinkedList;
+
 /**
  * this class represents a single work stealing processor, it is
  * {@link Runnable} so it is suitable to be executed by threads.
@@ -15,6 +17,7 @@ public class Processor implements Runnable {
 
     private final WorkStealingThreadPool pool;
     private final int id;
+     LinkedList<Task<?>> waitingTask;
 
 
 
@@ -37,6 +40,7 @@ public class Processor implements Runnable {
     /*package*/ Processor(int id, WorkStealingThreadPool pool) {
         this.id = id;
         this.pool = pool;
+        waitingTask = new LinkedList<Task<?>>();
     }
 
     protected void addTask(Task<?> task){
@@ -48,6 +52,7 @@ public class Processor implements Runnable {
     public void run() {
         while(true){
             Task<?> currentTask = pool.myDequeTasksArray[id].pollFirst();
+            waitingTask.addFirst(currentTask);
             if(currentTask != null){
                 currentTask.handle(this);
             }else{

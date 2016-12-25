@@ -52,7 +52,7 @@ public abstract class Task<R> {
             taskStarted = true;
             start();
         }else{
-            taskContinue();
+            taskCallBack.run();
         }
     }
 
@@ -89,20 +89,20 @@ public abstract class Task<R> {
     protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
         taskCallBack = callback;
 
+        Task<?> taskReference = this;
+
         for (Task<?> spawnTask:tasks) {
-            spawnTask.myDeferred.whenResolved(()->{
-                this.taskContinue();
-            });
+                spawnTask.myDeferred.whenResolved(()->
+                        taskReference.whenSubTaskComplete()
+                );
         }
-        taskContinue();
     }
 
-    protected final void taskContinue(){
+    protected final void whenSubTaskComplete(){
         spwanTasksCount--;
         if(spwanTasksCount <= 0){
             myProcessor.addTask(this);
-        }else{
-            // PUT ON HOLD
+            myProcessor.waitingTask.remove(this);
         }
     }
     /**
