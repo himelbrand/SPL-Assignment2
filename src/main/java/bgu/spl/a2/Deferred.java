@@ -19,7 +19,9 @@ import java.util.LinkedList;
  * @param <T> the result type
  */
 public class Deferred<T> {
-
+    private Runnable callback;
+    private T result;
+    private Boolean isResolved=false;
     /**
      *
      * @return the resolved value if such exists (i.e., if this object has been
@@ -29,8 +31,9 @@ public class Deferred<T> {
      *
      */
     public T get() {
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        if(!isResolved)
+            throw new IllegalStateException("Not yet resolved");
+        return result;
     }
 
     /**
@@ -39,8 +42,7 @@ public class Deferred<T> {
      * {@link #resolve(java.lang.Object)} has been called on this object before.
      */
     public boolean isResolved() {
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        return isResolved;
     }
 
     /**
@@ -56,8 +58,14 @@ public class Deferred<T> {
      * resolved
      */
     public void resolve(T value) {
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        if(isResolved)
+            throw new IllegalStateException("Already resolved");
+        this.result=value;
+        if(callback!=null) {
+            callback.run();
+            callback = null;
+        }
+        isResolved=true;
     }
 
     /**
@@ -74,8 +82,11 @@ public class Deferred<T> {
      * resolved
      */
     public void whenResolved(Runnable callback) {
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        this.callback=callback;
+        if(isResolved) {
+            callback.run();
+            this.callback=null;
+        }
     }
 
 }
