@@ -65,7 +65,6 @@ public class WorkStealingThreadPool {
         myProcessorArray = new Processor[nthreads];
         myThreadsArray = new Thread[nthreads];
         myDequeTasksArray = new ConcurrentLinkedDeque[nthreads];
-
         for(int i=0;i<nthreads;i++){
             myProcessorArray[i] = new Processor(i,this);
             myThreadsArray[i] = new Thread(myProcessorArray[i]);
@@ -85,8 +84,8 @@ public class WorkStealingThreadPool {
         int myRandomNumber = myRandom.nextInt(myProcessorArray.length);
         task.setProcessor(myProcessorArray[myRandomNumber]);
         myDequeTasksArray[myRandomNumber].add(task);
-        System.out.println(myRandomNumber + " processor placed first          @@@@@@@@@@@@@@s");
         myVersionMonitor.inc();
+
     }
 
     /**
@@ -104,10 +103,10 @@ public class WorkStealingThreadPool {
     public void shutdown() throws InterruptedException {
         for(int i=0;i<myProcessorArray.length;i++){
             myThreadsArray[i].interrupt();
-            myThreadsArray[i].interrupt();
         }
         //TODO: replace method body with real implementation
-      //  throw new UnsupportedOperationException("Not Implemented Yet.");
+        //  throw new UnsupportedOperationException("Not Implemented Yet.");
+
     }
 
 
@@ -119,7 +118,8 @@ public class WorkStealingThreadPool {
             myThreadsArray[i].start();
         }
         //TODO: replace method body with real implementation
-       // throw new UnsupportedOperationException("Not Implemented Yet.");
+        // throw new UnsupportedOperationException("Not Implemented Yet.");
+
     }
 
 }

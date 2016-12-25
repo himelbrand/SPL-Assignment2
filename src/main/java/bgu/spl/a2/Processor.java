@@ -1,6 +1,6 @@
 package bgu.spl.a2;
 
-import com.sun.tools.classfile.Exceptions_attribute;
+
 
 import java.util.LinkedList;
 
@@ -19,8 +19,8 @@ public class Processor implements Runnable {
 
     private final WorkStealingThreadPool pool;
     private final int id;
-     LinkedList<Task<?>> waitingTask;
-     private boolean running = true;
+    LinkedList<Task<?>> waitingTask;
+    private boolean running = true;
 
 
     /**
@@ -42,10 +42,10 @@ public class Processor implements Runnable {
     /*package*/ Processor(int id, WorkStealingThreadPool pool) {
         this.id = id;
         this.pool = pool;
-        waitingTask = new LinkedList<Task<?>>();
+        waitingTask = new LinkedList<>();
     }
 
-    protected void addTask(Task<?> task){
+    void addTask(Task<?> task){
         pool.myDequeTasksArray[id].addLast(task);
         pool.myVersionMonitor.inc();
     }
@@ -61,7 +61,7 @@ public class Processor implements Runnable {
             System.out.println(Thread.currentThread().getName() + " try to work");
             if(currentTask != null){
                 waitingTask.addFirst(currentTask);
-           //     System.out.println(currentTask.taskName +" entered waiting");
+                //     System.out.println(currentTask.taskName +" entered waiting");
                 currentTask.handle(this);
             }else{
                 boolean tryToSteal = pool.stealTasks(id);
@@ -69,7 +69,7 @@ public class Processor implements Runnable {
                     currentTask = pool.myDequeTasksArray[id].pollFirst();
                     if (currentTask != null) {
                         waitingTask.addFirst(currentTask);
-                     //   System.out.println(currentTask.taskName + " entered waiting");
+                        //   System.out.println(currentTask.taskName + " entered waiting");
                         currentTask.handle(this);
                     } else {
                         try {
@@ -77,7 +77,7 @@ public class Processor implements Runnable {
 
                         } catch (Exception e) {
 
-                           running = false;
+                            running = false;
 
                         }
                     }

@@ -28,22 +28,14 @@ public class MergeSort extends Task<int[]> {
 
         if (array.length > 1) {
             int middle = (array.length) / 2;
-            // Below step sorts the left side of the array
             int[] array1 = Arrays.copyOfRange(array, 0, middle);
             int[] array2 = Arrays.copyOfRange(array, middle, array.length);
-
-          //  System.out.println(Arrays.toString(array1));
-          //  System.out.println(Arrays.toString(array2));
-
-
-
             MergeSort spwnTask1 = new MergeSort(array1);
             MergeSort spwnTask2 = new MergeSort(array2);
             spawn(spwnTask1, spwnTask2);
-            ArrayList<MergeSort> myCollection = new ArrayList<MergeSort>(2);
+            ArrayList<MergeSort> myCollection = new ArrayList<>(2);
             myCollection.add(spwnTask1);
             myCollection.add(spwnTask2);
-
             whenResolved(myCollection, () -> {
                 int[] arr =mergeArrays(myCollection.get(0).getResult().get(), myCollection.get(1).getResult().get());
                     complete(arr);
