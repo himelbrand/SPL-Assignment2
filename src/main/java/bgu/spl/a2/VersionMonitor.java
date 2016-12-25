@@ -30,10 +30,10 @@ public class VersionMonitor {
     }
 
     public void inc() {
-        currentVersion++;
-        lock1.notify();
-        //TODO: replace method body with real implementation
-       // throw new UnsupportedOperationException("Not Implemented Yet.");
+        synchronized (lock1) {
+            currentVersion++;
+            lock1.notifyAll();
+        }
     }
 
     public void await(int version) throws InterruptedException {

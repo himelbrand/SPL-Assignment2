@@ -30,6 +30,7 @@ public class SumMatrix extends Task<int[]> {
                         res[j] = tasks.get(j).getResult().get();
                     }
                     complete(res);
+                    System.out.println(res);
                 }
         );
     }

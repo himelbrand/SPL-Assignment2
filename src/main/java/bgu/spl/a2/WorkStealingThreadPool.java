@@ -82,6 +82,7 @@ public class WorkStealingThreadPool {
         int myRandomNumber = myRandom.nextInt(myProcessorArray.length);
         task.setProcessor(myProcessorArray[myRandomNumber]);
         myDequeTasksArray[myRandomNumber].add(task);
+        System.out.println(myRandomNumber + " processor placed first task");
         myVersionMonitor.inc();
     }
 

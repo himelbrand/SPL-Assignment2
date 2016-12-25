@@ -15,8 +15,8 @@ public class testMatrix {
         createMatrix(array);
         SumMatrix myTask = new SumMatrix(array);
         pool.start();
-       // pool.submit(myTask);
-//some stuff
+        pool.submit(myTask);
+       // System.out.println("@@@@@@@@@@@" + myTask.getResult());
         //pool.shutdown(); //stopping all the threads
     }
     private static void createMatrix(int[][] array){

@@ -53,6 +53,7 @@ public class Processor implements Runnable {
         while(true){
             Task<?> currentTask = pool.myDequeTasksArray[id].pollFirst();
             waitingTask.addFirst(currentTask);
+            System.out.println(Thread.currentThread().getName() + "   try to take a task");
             if(currentTask != null){
                 currentTask.handle(this);
             }else{

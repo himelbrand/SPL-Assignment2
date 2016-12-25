@@ -51,6 +51,7 @@ public abstract class Task<R> {
         if(!taskStarted){
             taskStarted = true;
             start();
+            System.out.println(Thread.currentThread().getName() + "    started");
         }else{
             taskCallBack.run();
         }
