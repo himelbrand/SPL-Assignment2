@@ -15,13 +15,13 @@ import java.util.Collection;
  */
 public abstract class Task<R> {
 
-Deferred<R> myDeferred = new Deferred<>();
+    Deferred<R> myDeferred = new Deferred<R>();
 
-volatile int spwanTasksCount = 0;
+    volatile int spwanTasksCount = 0;
 
-Runnable taskCallBack;
+    Runnable taskCallBack;
 
-Processor myProcessor;
+    private Processor myProcessor;
     /**
      * start handling the task - note that this method is protected, a handler
      * cannot call it directly but instead must use the
@@ -63,10 +63,9 @@ Processor myProcessor;
     protected final void spawn(Task<?>... task) {
 
         for(Task<?> spawnTask:task){
+            spawnTask.setProcessor(myProcessor);
             myProcessor.addTask(spawnTask);
         }
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -90,8 +89,6 @@ Processor myProcessor;
             });
         }
         taskContinue();
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     protected final void taskContinue(){
@@ -111,17 +108,14 @@ Processor myProcessor;
      */
     protected final void complete(R result) {
         myDeferred.resolve(result);
-
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
      * @return this task deferred result
      */
     public final Deferred<R> getResult() {
-        //TODO: replace method body with real implementation
-        throw new UnsupportedOperationException("Not Implemented Yet.");
+        this.myDeferred.get();
+        return this.myDeferred;
     }
 
 }
