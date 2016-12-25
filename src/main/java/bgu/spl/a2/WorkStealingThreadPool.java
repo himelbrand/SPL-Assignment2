@@ -78,7 +78,9 @@ public class WorkStealingThreadPool {
      */
     public void submit(Task<?> task) {
         Random myRandom = new Random(myProcessorArray.length);
-        myDequeTasksArray[myRandom.nextInt()].add(task);
+        int myRandomNumber = myRandom.nextInt();
+        task.setProcessor(myProcessorArray[myRandomNumber]);
+        myDequeTasksArray[myRandomNumber].add(task);
         myVersionMonitor.inc();
         //TODO: replace method body with real implementation
         throw new UnsupportedOperationException("Not Implemented Yet.");

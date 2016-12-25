@@ -15,7 +15,13 @@ import java.util.Collection;
  */
 public abstract class Task<R> {
 
+Deferred<R> myDeferred = new Deferred<>();
 
+volatile int spwanTasksCount = 0;
+
+Runnable taskCallBack;
+
+Processor myProcessor;
     /**
      * start handling the task - note that this method is protected, a handler
      * cannot call it directly but instead must use the
@@ -39,8 +45,13 @@ public abstract class Task<R> {
      * @param handler the handler that wants to handle the task
      */
     /*package*/ final void handle(Processor handler) {
+
         //TODO: replace method body with real implementation
         throw new UnsupportedOperationException("Not Implemented Yet.");
+    }
+
+    protected void setProcessor(Processor processor){
+        this.myProcessor = processor;
     }
 
     /**
@@ -50,6 +61,10 @@ public abstract class Task<R> {
      * @param task the task to execute
      */
     protected final void spawn(Task<?>... task) {
+
+        for(Task<?> spawnTask:task){
+            myProcessor.addTask(spawnTask);
+        }
         //TODO: replace method body with real implementation
         throw new UnsupportedOperationException("Not Implemented Yet.");
     }
@@ -64,12 +79,30 @@ public abstract class Task<R> {
      * @param tasks
      * @param callback the callback to execute once all the results are resolved
      */
-    protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
 
+
+    protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
+        taskCallBack = callback;
+
+        for (Task<?> spawnTask:tasks) {
+            spawnTask.myDeferred.whenResolved(()->{
+                this.taskContinue();
+            });
+        }
+        taskContinue();
         //TODO: replace method body with real implementation
         throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
+    protected final void taskContinue(){
+        spwanTasksCount--;
+        if(spwanTasksCount <= 0){
+            Thread taskCallBackThread = new Thread(taskCallBack);
+            taskCallBackThread.start();
+        }else{
+            // PUT ON HOLD
+        }
+    }
     /**
      * resolve the internal result - should be called by the task derivative
      * once it is done.
@@ -77,6 +110,8 @@ public abstract class Task<R> {
      * @param result - the task calculated result
      */
     protected final void complete(R result) {
+        myDeferred.resolve(result);
+
         //TODO: replace method body with real implementation
         throw new UnsupportedOperationException("Not Implemented Yet.");
     }

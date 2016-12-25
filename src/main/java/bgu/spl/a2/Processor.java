@@ -39,6 +39,11 @@ public class Processor implements Runnable {
         this.pool = pool;
     }
 
+    protected void addTask(Task<?> task){
+        pool.myDequeTasksArray[id].addLast(task);
+        pool.myVersionMonitor.inc();
+    }
+
     @Override
     public void run() {
         while(true){
