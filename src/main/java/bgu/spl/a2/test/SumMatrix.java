@@ -5,9 +5,6 @@ import bgu.spl.a2.Task;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by himelbrand on 12/25/16.
- */
 public class SumMatrix extends Task<int[]> {
     private int[][] array;
 

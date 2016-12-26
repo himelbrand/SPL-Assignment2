@@ -5,11 +5,9 @@ import bgu.spl.a2.WorkStealingThreadPool;
 import java.util.Random;
 import java.util.StringJoiner;
 
-/**
- * Created by himelbrand on 12/25/16.
- */
+
 public class testMatrix {
-    public static void main(String args[]){
+    public static void main(String args[]) throws InterruptedException{
         WorkStealingThreadPool pool = new WorkStealingThreadPool(4);
         int[][] array = new int[5][10];
         createMatrix(array);
@@ -24,11 +22,8 @@ public class testMatrix {
             System.out.println(sum);
         });
         pool.submit(myTask);
-        try {
-            pool.shutdown();
-        } catch (InterruptedException e) {
-            return;
-        }
+        pool.shutdown();
+
     }
     private static void createMatrix(int[][] array){
         int x = 0;

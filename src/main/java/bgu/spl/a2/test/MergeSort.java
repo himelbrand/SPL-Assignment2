@@ -10,10 +10,9 @@ import bgu.spl.a2.WorkStealingThreadPool;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
+
 
 public class MergeSort extends Task<int[]> {
 
@@ -39,20 +38,14 @@ public class MergeSort extends Task<int[]> {
             whenResolved(myCollection, () -> {
                 int[] arr =mergeArrays(myCollection.get(0).getResult().get(), myCollection.get(1).getResult().get());
                     complete(arr);
-
             });
-
         }else{
             complete(array);
         }
-
-
     }
 
     private int[] mergeArrays(int[] array1, int[] array2) {
-
         int[] newArray = new int[array1.length + array2.length];
-
         int i=0,k=0,j =0;
         while (i < array1.length && j < array2.length) {
             if (array1[i] <= array2[j]) {
@@ -74,16 +67,14 @@ public class MergeSort extends Task<int[]> {
             k++;
             i++;
         }
-
         return newArray;
     }
 
 
     public static void main(String[] args) throws InterruptedException {
-         final WorkStealingThreadPool pool = new WorkStealingThreadPool(10);
+         final WorkStealingThreadPool pool = new WorkStealingThreadPool(20);
         int n = 10000; //you may check on different number of elements if you like
         int[] array = new Random().ints(n).toArray();
-
         MergeSort task = new MergeSort(array);
         task.taskName = "Task_0";
         System.out.println(Arrays.toString(array));
@@ -93,30 +84,22 @@ public class MergeSort extends Task<int[]> {
         pool.submit(task);
         task.getResult().whenResolved(() -> {
             System.out.println(Arrays.toString(task.getResult().get()));
+            //checks if result is a sorted array
             int first = task.getResult().get()[0];
-            boolean check =false;
+            boolean check =true;
             for(int i:task.getResult().get()){
                 if(i >= first)
-                {
                     first=i;
-                }else
-                {
-                    check = true;
-                }
-
-
-
+                else
+                    check = false;
             }
             long endTime =  System.currentTimeMillis();
             System.out.println((endTime - startTime));
             System.out.println(check);
             l.countDown();
-
         });
         l.await();
-            pool.shutdown();
-
-
+        pool.shutdown();
     }
 
 }
