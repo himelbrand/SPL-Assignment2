@@ -102,10 +102,11 @@ public class WorkStealingThreadPool {
      */
     public void shutdown() throws InterruptedException {
         for(int i=0;i<myProcessorArray.length;i++){
+            if(Thread.currentThread() == myThreadsArray[i]){
+                throw new UnsupportedOperationException();
+            }
             myThreadsArray[i].interrupt();
         }
-        //TODO: replace method body with real implementation
-        //  throw new UnsupportedOperationException("Not Implemented Yet.");
 
     }
 

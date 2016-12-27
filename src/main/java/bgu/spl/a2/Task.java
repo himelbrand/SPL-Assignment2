@@ -112,6 +112,7 @@ public abstract class Task<R> {
                 });
         }
     }
+
     //this method is synchronized so spawnTasksCount
     synchronized private void whenSubTaskComplete(){
         spawnTasksCount--;
@@ -122,6 +123,7 @@ public abstract class Task<R> {
             myProcessor.waitingTask.remove(this);
         }
     }
+
     /**
      * resolve the internal result - should be called by the task derivative
      * once it is done.

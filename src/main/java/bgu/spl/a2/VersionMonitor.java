@@ -1,8 +1,5 @@
 package bgu.spl.a2;
 
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.ThreadFactory;
-
 /**
  * Describes a monitor that supports the concept of versioning - its idea is
  * simple, the monitor has a version number which you can receive via the method
