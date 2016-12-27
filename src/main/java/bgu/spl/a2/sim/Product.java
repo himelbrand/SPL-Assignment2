@@ -6,6 +6,10 @@ import java.util.List;
  * A class that represents a product produced during the simulation.
  */
 public class Product {
+	private final long startId;
+	private long currentId;
+	private String name;
+	private List<Product> parts;
 	/**
 	* Constructor 
 	* @param startId - Product start id
