@@ -61,7 +61,6 @@ public class Processor implements Runnable {
             System.out.println(Thread.currentThread().getName() + " try to work");
             if(currentTask != null){
                 waitingTask.addFirst(currentTask);
-                //     System.out.println(currentTask.taskName +" entered waiting");
                 currentTask.handle(this);
             }else{
                 boolean tryToSteal = pool.stealTasks(id);

@@ -72,7 +72,7 @@ public class MergeSort extends Task<int[]> {
 
 
     public static void main(String[] args) throws InterruptedException {
-         final WorkStealingThreadPool pool = new WorkStealingThreadPool(20);
+         final WorkStealingThreadPool pool = new WorkStealingThreadPool(10);
         int n = 10000; //you may check on different number of elements if you like
         int[] array = new Random().ints(n).toArray();
         MergeSort task = new MergeSort(array);

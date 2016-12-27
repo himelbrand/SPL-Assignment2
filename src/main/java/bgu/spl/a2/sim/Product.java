@@ -18,31 +18,31 @@ public class Product {
 	/**
 	* @return The product name as a string
 	*/
-    public String getName(){
-
-	}
+//    public String getName(){
+//
+//	}
 
 	/**
 	* @return The product start ID as a long. start ID should never be changed.
 	*/
-    public long getStartId(){
-
-	}
+//    public long getStartId(){
+//
+//	}
     
 	/**
 	* @return The product final ID as a long. 
 	* final ID is the ID the product received as the sum of all UseOn(){} 
 	*/
-    public long getFinalId(){
-
-	}
+//    public long getFinalId(){
+//
+//	}
 
 	/**
 	* @return Returns all parts of this product as a List of Products
 	*/
-    public List<Product> getParts(){
-
-	}
+//    public List<Product> getParts(){
+//
+//	}
 
 	/**
 	* Add a new part to the product

@@ -19,7 +19,7 @@ public abstract class Task<R> {
 
     public Deferred<R> myDeferred = new Deferred<R>();
 
-    volatile int spwanTasksCount = 0;
+     private int spawnTasksCount = 0;
 
     Runnable taskCallBack;
 
@@ -77,7 +77,7 @@ public abstract class Task<R> {
      */
     protected final void spawn(Task<?>... task) {
 
-        spwanTasksCount += task.length;
+        spawnTasksCount += task.length;
         for(Task<?> spawnTask:task){
             spawnTask.taskName = taskName + "." +i;
             i++;
@@ -112,11 +112,11 @@ public abstract class Task<R> {
                 });
         }
     }
-
-    protected final void whenSubTaskComplete(){
-        spwanTasksCount--;
-       // System.out.println("spwanTasksCount  is " + spwanTasksCount);
-        if(spwanTasksCount <= 0){
+    //this method is synchronized so spawnTasksCount
+    synchronized private void whenSubTaskComplete(){
+        spawnTasksCount--;
+       // System.out.println("spawnTasksCount  is " + spawnTasksCount);
+        if(spawnTasksCount <= 0){
             System.out.println(taskName +" returned to queue");
             myProcessor.addTask(this);
             myProcessor.waitingTask.remove(this);

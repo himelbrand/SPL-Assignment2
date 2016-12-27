@@ -28,9 +28,9 @@ public class Warehouse {
 	* @param type - string describing the required tool
 	* @return a deferred promise for the  requested tool
 	*/
-    public Deferred<Tool> acquireTool(String type){
-
-	}
+//    public Deferred<Tool> acquireTool(String type){
+//
+//	}
 
 	/**
 	* Tool return procedure - releases a tool which becomes available in the warehouse upon completion.
@@ -46,9 +46,9 @@ public class Warehouse {
 	* @param product - a string with the product name for which a ManufactoringPlan is desired
 	* @return A ManufactoringPlan for product
 	*/
-    public ManufactoringPlan getPlan(String product){
-
-	}
+//    public ManufactoringPlan getPlan(String product){
+//
+//	}
 	
 	/**
 	* Store a ManufactoringPlan in the warehouse for later retrieval
