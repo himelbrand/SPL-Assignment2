@@ -75,7 +75,8 @@ public class Warehouse {
 				}
 				break;
 		}
-		return newTool;
+        System.out.println("gcdScrewDriver : " + gcdScrewDriverToolCount + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount);
+        return newTool;
 	}
 
 	/**
@@ -97,6 +98,7 @@ public class Warehouse {
 				gcdScrewDriverDeferredList.poll().resolve(new GcdScrewDriver());
 				break;
 		}
+        System.out.println("gcdScrewDriver : " + gcdScrewDriverToolCount + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount);
 	}
 
 	

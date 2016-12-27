@@ -60,5 +60,10 @@ public class Product {
 		parts.add(p);
 	}
 
+	public void setCurrentId(long id){
+        this.currentId += id;
+    }
+
+
 
 }
