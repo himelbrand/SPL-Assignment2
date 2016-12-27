@@ -28,25 +28,9 @@ public class MainOrder {
 
         String[] parts;
 
-        String[] getTools ()
-        {
-            return tools;
-        }
 
-        public void setTools (String[] tools)
-        {
-            this.tools = tools;
-        }
 
-        public String[] getParts ()
-        {
-            return parts;
-        }
 
-        public void setParts (String[] parts)
-        {
-            this.parts = parts;
-        }
 
         @Override
         public String toString()
@@ -54,31 +38,12 @@ public class MainOrder {
             return "ClassPojo [product = "+product+", tools = "+tools+", parts = "+parts+"]";
         }
     }
-    public class Tools
+    class Tools
     {
-        private String tool;
+        String tool;
 
-        private String qty;
+        String qty;
 
-        public String getTool ()
-        {
-            return tool;
-        }
-
-        public void setTool (String tool)
-        {
-            this.tool = tool;
-        }
-
-        public String getQty ()
-        {
-            return qty;
-        }
-
-        public void setQty (String qty)
-        {
-            this.qty = qty;
-        }
 
         @Override
         public String toString()
@@ -86,46 +51,14 @@ public class MainOrder {
             return "ClassPojo [tool = "+tool+", qty = "+qty+"]";
         }
     }
-    private Plans[] plans;
+    Plans[] plans;
 
-    private Tools[] tools;
+    Tools[] tools;
 
-    private String threads;
+    String threads;
 
-    private Waves[][] waves;
-
-
-
-    public Tools[] getTools ()
-    {
-        return tools;
-    }
-
-    public void setTools (Tools[] tools)
-    {
-        this.tools = tools;
-    }
-
-    public String getThreads ()
-    {
-        return threads;
-    }
-
-    public void setThreads (String threads)
-    {
-        this.threads = threads;
-    }
-
-    public Waves[][] getWaves ()
-    {
-        return waves;
-    }
-
-    public void setWaves (Waves[][] waves)
-    {
-        this.waves = waves;
-    }
-
+    Waves[][] waves;
+    
     @Override
     public String toString()
     {
