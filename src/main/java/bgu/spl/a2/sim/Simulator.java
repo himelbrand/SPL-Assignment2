@@ -109,7 +109,7 @@ public class Simulator {
         Gson gson = new Gson();
 
         try {
-            myConfiguration = gson.fromJson(new FileReader("/Users/Shahar/Desktop/BGU/SPL/SPL - Assignment #2"), MainOrder.class);
+            myConfiguration = gson.fromJson(new FileReader("/Users/Shahar/Desktop/BGU/SPL/SPL - Assignment #2/simulation.json"), MainOrder.class);
         } catch (FileNotFoundException e) {
             System.out.println("Configuration file not found.");
         }
