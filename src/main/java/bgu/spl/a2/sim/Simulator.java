@@ -6,13 +6,29 @@
 package bgu.spl.a2.sim;
 
 import bgu.spl.a2.WorkStealingThreadPool;
+import bgu.spl.a2.sim.conf.ManufactoringPlan;
+import bgu.spl.a2.sim.tasks.ManufatoringTask;
+import bgu.spl.a2.sim.tools.GcdScrewDriver;
+import bgu.spl.a2.sim.tools.NextPrimeHammer;
+import bgu.spl.a2.sim.tools.RandomSumPliers;
+import bgu.spl.a2.sim.tools.Tool;
+import com.google.gson.JsonElement;
+import com.google.gson.stream.JsonReader;
 import jdk.nashorn.internal.parser.JSONParser;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import java.util.concurrent.CountDownLatch;
+
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 
 
 /**
@@ -22,6 +38,8 @@ public class Simulator {
 
 	public static Warehouse myWarehouse;
 	private static WorkStealingThreadPool pool;
+	private static MainOrder myConfiguration;
+    private static volatile  int ordersCount = 0;
 
 	/**
 	* Begin the simulation
@@ -29,8 +47,53 @@ public class Simulator {
 	*/
     public static ConcurrentLinkedQueue<Product> start(){
 
-		pool.start();
-	}
+
+        Object lock = new Object();
+        ConcurrentLinkedQueue<Product> myProductsList = new ConcurrentLinkedQueue<>();
+        pool.start();
+    	for(MainOrder.Waves[] wave:myConfiguration.waves) {
+
+    	    for(MainOrder.Waves order:wave) {
+
+    	          ordersCount += (int)Integer.parseInt(order.qty);
+
+    	        for(int i=0;i<Integer.parseInt(order.qty);i++) {
+                    ManufatoringTask orderTask = new ManufatoringTask(order.product, Integer.parseInt(order.startId));
+                    orderTask.getResult().whenResolved(()->{
+                        myProductsList.add(orderTask.getResult().get());
+                        ordersCount--;
+
+                        if(ordersCount == 0){
+                            synchronized (lock) {
+                                lock.notify();
+                            }
+                        }
+
+
+                    });
+                    pool.submit(orderTask);
+                }
+
+
+            }
+            synchronized (lock) {
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    System.out.println("moving to next wave");
+                }
+            }
+            System.out.println("moving to next wave");
+
+        }
+
+        try {
+            pool.shutdown();
+        } catch (InterruptedException e) {
+            System.out.println("pool shutdown exception");
+        }
+        return myProductsList;
+    }
 
 	/**
 	* attach a WorkStealingThreadPool to the Simulator, this WorkStealingThreadPool will be used to run the simulation
@@ -42,35 +105,39 @@ public class Simulator {
 	
 	public static int main(String [] args){
 
-		JSONParser parser = new JSONParser();
+        myWarehouse = new Warehouse();
+        Gson gson = new Gson();
 
-		try {
+        try {
+            myConfiguration = gson.fromJson(new FileReader("/Users/Shahar/Desktop/BGU/SPL/SPL - Assignment #2"), MainOrder.class);
+        } catch (FileNotFoundException e) {
+            System.out.println("Configuration file not found.");
+        }
 
-			Object obj = parser.parse(new FileReader(
-					"/Users/<username>/Documents/file1.txt"));
+        Simulator.attachWorkStealingThreadPool(new WorkStealingThreadPool(Integer.parseInt(myConfiguration.threads)));
 
-			JSONObject jsonObject = (JSONObject) obj;
+        //Add tools to warehouse
+        for(MainOrder.Tools tool: myConfiguration.tools){
+        switch(tool.tool){
+            case "np-hammer":
+                myWarehouse.addTool(new NextPrimeHammer(),Integer.parseInt(tool.qty));
+                break;
+            case "rs-pliers":
+                myWarehouse.addTool(new RandomSumPliers(),Integer.parseInt(tool.qty));
+                break;
+            case "gs-driver":
+                myWarehouse.addTool(new GcdScrewDriver(),Integer.parseInt(tool.qty));
+                break;
+        }
+        }
 
-			String name = (String) jsonObject.get("Name");
-			String author = (String) jsonObject.get("Author");
-			JSONArray companyList = (JSONArray) jsonObject.get("Company List");
+        //Add plans to warehouse
+        for(ManufactoringPlan plan: myConfiguration.plans){
+            myWarehouse.addPlan(plan);
+        }
 
-			System.out.println("Name: " + name);
-			System.out.println("Author: " + author);
-			System.out.println("\nCompany List:");
-			Iterator<String> iterator = companyList.iterator();
-			while (iterator.hasNext()) {
-				System.out.println(iterator.next());
-			}
+        Simulator.start();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-		Simulator mySimulator = new Simulator();
-		mySimulator.attachWorkStealingThreadPool(new WorkStealingThreadPool(333));
-		pool.start();
-		myWarehouse = new Warehouse();
 		return 1;
 	}
 }

@@ -1,6 +1,5 @@
 package bgu.spl.a2.sim;
 
-import bgu.spl.a2.Processor;
 import bgu.spl.a2.sim.tools.GcdScrewDriver;
 import bgu.spl.a2.sim.tools.NextPrimeHammer;
 import bgu.spl.a2.sim.tools.RandomSumPliers;
@@ -137,13 +136,13 @@ public class Warehouse {
 	public void addTool(Tool tool, int qty){
 		switch(tool.getType()){
 			case "np-hammer":
-				nextPrimeHammerToolCount.incrementAndGet();
+				nextPrimeHammerToolCount.set(qty);
 				break;
 			case "rs-pliers":
-				randomSumPliersHammerToolCount.incrementAndGet();
+				randomSumPliersHammerToolCount.set(qty);
 				break;
 			case "gs-driver":
-				gcdScrewDriverToolCount.incrementAndGet();
+				gcdScrewDriverToolCount.set(qty);
 				break;
 		}
 
