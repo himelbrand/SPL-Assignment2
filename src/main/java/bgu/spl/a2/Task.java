@@ -65,7 +65,7 @@ public abstract class Task<R> {
         }
     }
 
-    protected Processor getProcessor(Processor processor){
+    protected Processor getProcessor(){
         return this.myProcessor;
     }
 

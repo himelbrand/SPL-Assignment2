@@ -14,6 +14,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * A class describing the simulator for part 2 of the assignment
  */
 public class Simulator {
+
+	public static Warehouse myWarehouse;
 	/**
 	* Begin the simulation
 	* Should not be called before attachWorkStealingThreadPool()
@@ -31,6 +33,7 @@ public class Simulator {
 	}
 	
 	public static int main(String [] args){
+		myWarehouse = new Warehouse();
 		return 1;
 	}
 }
