@@ -4,7 +4,7 @@ package bgu.spl.a2.sim;
  * Created by himelbrand on 12/27/16.
  */
 public class MainOrder {
-    class Waves{
+    public class Waves{
         String product;
         String startId;
         String qty;
@@ -14,7 +14,7 @@ public class MainOrder {
             return "ClassPojo [product = "+product+", startId = "+startId+", qty = "+qty+"]";
         }
     }
-    class Plans{
+    public class Plans{
         String product;
         String[] tools;
         String[] parts;
@@ -23,7 +23,7 @@ public class MainOrder {
             return "ClassPojo [product = "+product+", tools = "+tools+", parts = "+parts+"]";
         }
     }
-    class Tools{
+    public class Tools{
         String tool;
         String qty;
         public String toString()
