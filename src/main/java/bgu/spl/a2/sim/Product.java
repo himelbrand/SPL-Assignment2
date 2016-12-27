@@ -1,5 +1,6 @@
 package bgu.spl.a2.sim;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,28 +10,31 @@ public class Product {
 	private final long startId;
 	private long currentId;
 	private String name;
-	private List<Product> parts;
+	private ArrayList<Product> parts;
 	/**
 	* Constructor 
 	* @param startId - Product start id
 	* @param name - Product name
 	*/
     public Product(long startId, String name){
-
+		this.startId=startId;
+		this.currentId=startId;
+		this.name=name;
+		this.parts = new ArrayList<>();
 	}
 
 	/**
 	* @return The product name as a string
 	*/
     public String getName(){
-
+		return name;
 	}
 
 	/**
 	* @return The product start ID as a long. start ID should never be changed.
 	*/
     public long getStartId(){
-
+		return startId;
 	}
     
 	/**
@@ -38,14 +42,14 @@ public class Product {
 	* final ID is the ID the product received as the sum of all UseOn(){} 
 	*/
     public long getFinalId(){
-
+		return currentId;
 	}
 
 	/**
 	* @return Returns all parts of this product as a List of Products
 	*/
     public List<Product> getParts(){
-
+		return parts;
 	}
 
 	/**
