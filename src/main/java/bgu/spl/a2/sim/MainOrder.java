@@ -1,5 +1,7 @@
 package bgu.spl.a2.sim;
 
+import bgu.spl.a2.sim.conf.ManufactoringPlan;
+
 /**
  * Created by himelbrand on 12/27/16.
  */
@@ -14,15 +16,6 @@ public class MainOrder {
             return "ClassPojo [product = "+product+", startId = "+startId+", qty = "+qty+"]";
         }
     }
-    public class Plans{
-        String product;
-        String[] tools;
-        String[] parts;
-        public String toString()
-        {
-            return "ClassPojo [product = "+product+", tools = "+tools+", parts = "+parts+"]";
-        }
-    }
     public class Tools{
         String tool;
         String qty;
@@ -32,7 +25,7 @@ public class MainOrder {
         }
     }
     //Main Order Fields and toString
-    Plans[] plans;
+    ManufactoringPlan[] plans;
     Tools[] tools;
     String threads;
     Waves[][] waves;
