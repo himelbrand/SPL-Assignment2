@@ -108,7 +108,7 @@ public class Warehouse {
     public ManufactoringPlan getPlan(String product){
 		ManufactoringPlan myManufactoringPlansToReturn = null;
     	for(ManufactoringPlan myManufactoringPlans:manufactoringPlansList){
-    		if(myManufactoringPlans.getProductName() == product)
+    		if(myManufactoringPlans.getProductName().equals(product))
 				myManufactoringPlansToReturn =  myManufactoringPlans;
 		}
 //		if(myManufactoringPlansToReturn == null)
