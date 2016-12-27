@@ -21,7 +21,7 @@ public abstract class Task<R> {
 
      private int spawnTasksCount = 0;
 
-    Runnable taskCallBack;
+    private Runnable taskCallBack;
 
     private boolean taskStarted = false;
 
