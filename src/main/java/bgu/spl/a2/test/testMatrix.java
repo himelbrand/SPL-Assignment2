@@ -14,10 +14,10 @@ public class testMatrix {
         SumMatrix myTask = new SumMatrix(array);
         pool.start();
         myTask.taskName = "-- Task Main --";
-        myTask.myDeferred.whenResolved(()->{
+        myTask.getResult().whenResolved(()->{
             int sum = 0;
-            for (int i =0;  i<myTask.myDeferred.get().length;i++){
-                sum += myTask.myDeferred.get()[i];
+            for (int i =0;  i<myTask.getResult().get().length;i++){
+                sum += myTask.getResult().get()[i];
             }
             System.out.println(sum);
         });

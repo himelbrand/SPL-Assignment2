@@ -17,9 +17,9 @@ import java.util.Collection;
  */
 public abstract class Task<R> {
 
-    public Deferred<R> myDeferred = new Deferred<R>();
+    private Deferred<R> myDeferred = new Deferred<R>();
 
-     private int spawnTasksCount = 0;
+    private int spawnTasksCount = 0;
 
     private Runnable taskCallBack;
 
@@ -65,8 +65,8 @@ public abstract class Task<R> {
         }
     }
 
-    protected void setProcessor(Processor processor){
-        this.myProcessor = processor;
+    protected Processor getProcessor(Processor processor){
+        return this.myProcessor;
     }
 
     /**
@@ -82,7 +82,7 @@ public abstract class Task<R> {
             spawnTask.taskName = taskName + "." +i;
             i++;
             System.out.println(taskName + " spawned "+ spawnTask.taskName);
-            spawnTask.setProcessor(myProcessor);
+
             myProcessor.addTask(spawnTask);
         }
     }
