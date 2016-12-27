@@ -57,7 +57,7 @@ public class Product {
 	* @param p - part to be added as a Product object
 	*/
     public void addPart(Product p){
-
+		parts.add(p);
 	}
 
 
