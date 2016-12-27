@@ -15,15 +15,17 @@ public class GcdScrewDriver implements Tool {
 
     @Override
     public long useOn(Product p) {
+        long ans=0;
         BigInteger idReverse;
         BigInteger id;
+        BigInteger gcd;
         for (Product part:p.getParts()) {
             id = BigInteger.valueOf(part.getFinalId());
             idReverse = BigInteger.valueOf(getReversedLong(part.getFinalId()));
-
-            //ans+=Math.abs(id.nextProbablePrime().longValueExact());
+            gcd=id.gcd(idReverse);
+            ans+=Math.abs(gcd.longValueExact());
         }
-        return 0;
+        return ans;
     }
     private long getReversedLong(long num){
         long reversed = 0;
