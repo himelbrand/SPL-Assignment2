@@ -74,10 +74,8 @@ public class Processor implements Runnable {
                         try {
                             pool.myVersionMonitor.await(pool.myVersionMonitor.getVersion());
 
-                        } catch (Exception e) {
-
+                        } catch (InterruptedException e) {
                             running = false;
-
                         }
                     }
                 }

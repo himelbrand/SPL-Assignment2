@@ -22,36 +22,25 @@ import java.util.concurrent.ThreadFactory;
 public class VersionMonitor {
 
     private int currentVersion;
-    private final  Object lock1 = new Object();
+    private final  Object lock = new Object();
     public int getVersion() {
-        //TODO: replace method body with real implementation
         return this.currentVersion;
-       // throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     public void inc() {
-        synchronized (lock1) {
+        synchronized (lock) {
             currentVersion++;
-            lock1.notifyAll();
+            lock.notifyAll();
         }
     }
 
     public void await(int version) throws InterruptedException {
-
-        synchronized (lock1){
-            //System.out.println("Processor " + Thread.currentThread().getName() +" took the key");
-            while(version == getVersion())
-            {
-               // System.out.println("Processor " + Thread.currentThread().getName() + "version is " +version +  "   and general is "+ getVersion());
-              //  System.out.println("Processor " + Thread.currentThread().getName() +" release the key");
+        synchronized (lock){
+            while(version == getVersion()){
                 System.out.println( Thread.currentThread().getName() +" is enter waiting.");
-                lock1.wait();
+                lock.wait();
                 System.out.println( Thread.currentThread().getName() +" is exit waiting.");
             }
-            //System.out.println("Processor " + Thread.currentThread().getName() +" release the key2");
-
         }
-        //TODO: replace method body with real implementation
-     //   throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 }
