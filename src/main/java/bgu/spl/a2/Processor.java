@@ -72,6 +72,9 @@ public class Processor implements Runnable {
                         currentTask.handle(this);
                     } else {
                         try {
+                            System.out.println("q0 tasks size: "+pool.myProcessorArray[0].waitingTask.size());
+                            System.out.println("q1 tasks size: "+pool.myProcessorArray[1].waitingTask.size());
+                            System.out.println("q2 tasks size: "+pool.myProcessorArray[2].waitingTask.size());
                             pool.myVersionMonitor.await(pool.myVersionMonitor.getVersion());
 
                         } catch (InterruptedException e) {

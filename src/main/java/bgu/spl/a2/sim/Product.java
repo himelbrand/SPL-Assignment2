@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * A class that represents a product produced during the simulation.
  */
-public class Product {
+public class Product implements java.io.Serializable{
 	private final long startId;
 	private long currentId;
 	private String name;
@@ -64,6 +64,15 @@ public class Product {
         this.currentId += id;
     }
 
+    public String toString(){
+		String ans="\nProductName: "+name+"  Product Id = "+currentId;
+		ans+="\nPartsList {";
+		for (Product part:parts) {
+			ans+=part.toString();
+		}
+		ans+="\n}";
+		return ans;
+	}
 
 
 }

@@ -12,7 +12,7 @@ public class testMatrix {
 
          String[] toppings = {"Cheese", "Pepperoni", "Black Olives"};
 
-        Simulator.main(toppings);
-        Simulator.start();
+        Simulator.main(args);
+        //Simulator.start();
     }
 }

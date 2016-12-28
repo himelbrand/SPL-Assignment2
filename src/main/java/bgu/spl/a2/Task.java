@@ -132,6 +132,7 @@ public abstract class Task<R> {
      */
     protected final void complete(R result) {
        // System.out.println(taskName + " is completed !" + Arrays.toString((int[])result));
+        myProcessor.waitingTask.remove(this);
         myDeferred.resolve(result);
     }
 

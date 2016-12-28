@@ -89,15 +89,18 @@ public class Warehouse {
 		switch(tool.getType()){
 			case "np-hammer":
 				nextPrimeHammerToolCount.incrementAndGet();
-				nextPrimeHammerDeferredList.poll().resolve(new NextPrimeHammer());
+				if(nextPrimeHammerDeferredList.size()>0)
+					nextPrimeHammerDeferredList.poll().resolve(new NextPrimeHammer());
 				break;
 			case "rs-pliers":
 				randomSumPliersHammerToolCount.incrementAndGet();
-				randomSumPliersDeferredList.poll().resolve(new RandomSumPliers());
+				if(randomSumPliersDeferredList.size()>0)
+					randomSumPliersDeferredList.poll().resolve(new RandomSumPliers());
 				break;
 			case "gs-driver":
 				gcdScrewDriverToolCount.incrementAndGet();
-				gcdScrewDriverDeferredList.poll().resolve(new GcdScrewDriver());
+				if(gcdScrewDriverDeferredList.size()>0)
+					gcdScrewDriverDeferredList.poll().resolve(new GcdScrewDriver());
 				break;
 		}
 		System.out.println("gcdScrewDriver : " + gcdScrewDriverToolCount + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount);

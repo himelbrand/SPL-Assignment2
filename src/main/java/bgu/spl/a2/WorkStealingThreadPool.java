@@ -16,7 +16,7 @@ import java.util.concurrent.Semaphore;
  */
 public class WorkStealingThreadPool {
 
-    private Processor[] myProcessorArray;
+    Processor[] myProcessorArray;
     ConcurrentLinkedDeque<Task<?>>[] myDequeTasksArray;
     private  Thread[] myThreadsArray;
     VersionMonitor myVersionMonitor = new VersionMonitor();

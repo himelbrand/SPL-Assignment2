@@ -2,9 +2,6 @@ package bgu.spl.a2.sim;
 
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
 
-/**
- * Created by himelbrand on 12/27/16.
- */
 public class MainOrder {
     public class Waves{
         String product;

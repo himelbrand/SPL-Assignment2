@@ -11,15 +11,11 @@ import bgu.spl.a2.sim.tasks.ManufatoringTask;
 import bgu.spl.a2.sim.tools.GcdScrewDriver;
 import bgu.spl.a2.sim.tools.NextPrimeHammer;
 import bgu.spl.a2.sim.tools.RandomSumPliers;
-import bgu.spl.a2.sim.tools.Tool;
 import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonReader;
 import jdk.nashorn.internal.parser.JSONParser;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -58,14 +54,16 @@ public class Simulator {
     	          ordersCount += (int)Integer.parseInt(order.qty);
 
     	        for(int i=0;i<Integer.parseInt(order.qty);i++) {
-                    ManufatoringTask orderTask = new ManufatoringTask(order.product, Integer.parseInt(order.startId));
+                    ManufatoringTask orderTask = new ManufatoringTask(order.product, Long.parseLong(order.startId));
                     orderTask.getResult().whenResolved(()->{
                         myProductsList.add(orderTask.getResult().get());
                         ordersCount--;
-
+                        System.out.println("###########created a :"+orderTask.getResult().get().getName()+"###############");
+                        System.out.println("##################3 ordersCount : "+ordersCount+"!!!!! ######################");
+                        System.out.println("products made : "+myProductsList.size()+"!!!!!");
                         if(ordersCount == 0){
                             synchronized (lock) {
-                                lock.notify();
+                                lock.notifyAll();
                             }
                         }
 
@@ -79,6 +77,7 @@ public class Simulator {
             synchronized (lock) {
                 try {
                     lock.wait();
+                    System.out.println("@@@@@@@@@@@@@@@@@@@@@@@2  locked @@@@@@@@@@@@@@@2@@@@@@");
                 } catch (InterruptedException e) {
                     System.out.println("moving to next wave");
                 }
@@ -109,7 +108,7 @@ public class Simulator {
         Gson gson = new Gson();
 
         try {
-            myConfiguration = gson.fromJson(new FileReader("/Users/Shahar/Desktop/BGU/SPL/SPL - Assignment #2/simulation.json"), MainOrder.class);
+            myConfiguration = gson.fromJson(new FileReader(args[0]), MainOrder.class);
         } catch (FileNotFoundException e) {
             System.out.println("Configuration file not found.");
         }
@@ -136,8 +135,22 @@ public class Simulator {
             myWarehouse.addPlan(plan);
         }
 
-        Simulator.start();
 
-		return 1;
+        ConcurrentLinkedQueue<Product> SimulationResult;
+        SimulationResult = Simulator.start();
+        FileOutputStream fout = null;
+        try {
+            fout = new FileOutputStream("result.ser");
+            // This is the println of the content spouse to be in the output file, still not working
+            System.out.println(SimulationResult);
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+            oos.writeObject(SimulationResult);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+		return 0;
 	}
 }
