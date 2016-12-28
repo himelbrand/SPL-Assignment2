@@ -142,7 +142,7 @@ public class Simulator {
         try {
             fout = new FileOutputStream("result.ser");
             // This is the println of the content spouse to be in the output file, still not working
-            System.out.println(SimulationResult);
+            //System.out.println(SimulationResult);
             ObjectOutputStream oos = new ObjectOutputStream(fout);
             oos.writeObject(SimulationResult);
         } catch (Exception e) {
