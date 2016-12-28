@@ -57,10 +57,10 @@ public abstract class Task<R> {
         myProcessor = handler;
         if(!taskStarted){
             taskStarted = true;
-            System.out.println(taskName + " started by thread-" + myProcessor.getId());
+         //   System.out.println(taskName + " started by thread-" + myProcessor.getId());
             start();
         }else{
-            System.out.println(taskName + " continued by thread-" + myProcessor.getId());
+         //   System.out.println(taskName + " continued by thread-" + myProcessor.getId());
             taskCallBack.run();
         }
     }
@@ -81,7 +81,7 @@ public abstract class Task<R> {
         for(Task<?> spawnTask:task){
             spawnTask.taskName = taskName + "." +i;
             i++;
-            System.out.println(taskName + " spawned "+ spawnTask.taskName);
+        //    System.out.println(taskName + " spawned "+ spawnTask.taskName);
 
             myProcessor.addTask(spawnTask);
         }

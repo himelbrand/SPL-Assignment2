@@ -60,8 +60,7 @@ public class ManufatoringTask extends Task<Product> {
                             product.setCurrentId(myDeferred.get().useOn(product));
                             toolsUsedCount.decrementAndGet();
                             Simulator.myWarehouse.releaseTool(myDeferred.get());
-                            System.out.println("Tool released : " + toolName);
-                            System.out.println("task:" + this.taskName + " " + toolsUsedCount.get() + " Tools are needed ,    " + toolsUsedCount.get() + "tools left");
+                            System.out.println("task:" + this.taskName + " " + myToolsList.size() + " Tools are needed ,    " + toolsUsedCount.get() + "tools left");
                             if (toolsUsedCount.get() == 0) {
                                 complete(product);
                             }
@@ -70,6 +69,7 @@ public class ManufatoringTask extends Task<Product> {
                 }else{
                     for (Product part:product.getParts())
                         product.setCurrentId(part.getFinalId());
+
                     complete(product);
                 }
 

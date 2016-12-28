@@ -1,5 +1,6 @@
 package bgu.spl.a2.sim;
 
+import bgu.spl.a2.sim.tasks.ManufatoringTask;
 import bgu.spl.a2.sim.tools.GcdScrewDriver;
 import bgu.spl.a2.sim.tools.NextPrimeHammer;
 import bgu.spl.a2.sim.tools.RandomSumPliers;
@@ -86,21 +87,25 @@ public class Warehouse {
 	 * @param tool - The tool to be returned
 	 */
 	public void releaseTool(Tool tool){
+        Deferred<Tool> tempDeff;
 		switch(tool.getType()){
 			case "np-hammer":
 				nextPrimeHammerToolCount.incrementAndGet();
-				if(nextPrimeHammerDeferredList.size()>0)
-					nextPrimeHammerDeferredList.poll().resolve(new NextPrimeHammer());
+                tempDeff = nextPrimeHammerDeferredList.poll();
+				    if(tempDeff != null)
+					tempDeff.resolve(new NextPrimeHammer());
 				break;
 			case "rs-pliers":
 				randomSumPliersHammerToolCount.incrementAndGet();
-				if(randomSumPliersDeferredList.size()>0)
-					randomSumPliersDeferredList.poll().resolve(new RandomSumPliers());
+                tempDeff = randomSumPliersDeferredList.poll();
+                if(tempDeff != null)
+                    tempDeff.resolve(new RandomSumPliers());
 				break;
 			case "gs-driver":
 				gcdScrewDriverToolCount.incrementAndGet();
-				if(gcdScrewDriverDeferredList.size()>0)
-					gcdScrewDriverDeferredList.poll().resolve(new GcdScrewDriver());
+                tempDeff = gcdScrewDriverDeferredList.poll();
+                if(tempDeff != null)
+                    tempDeff.resolve(new GcdScrewDriver());
 				break;
 		}
 		System.out.println("gcdScrewDriver : " + gcdScrewDriverToolCount + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount);

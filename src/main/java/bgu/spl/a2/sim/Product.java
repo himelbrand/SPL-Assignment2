@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class Product implements java.io.Serializable{
 	private final long startId;
-	private long currentId;
+	volatile  private long currentId;
 	private String name;
 	private ArrayList<Product> parts;
 	/**
@@ -42,7 +42,9 @@ public class Product implements java.io.Serializable{
 	* final ID is the ID the product received as the sum of all UseOn(){} 
 	*/
     public long getFinalId(){
-		return currentId;
+		synchronized (this) {
+            return currentId;
+        }
 	}
 
 	/**
@@ -61,7 +63,9 @@ public class Product implements java.io.Serializable{
 	}
 
 	public void setCurrentId(long id){
-        this.currentId += id;
+        synchronized (this) {
+            this.currentId += id;
+        }
     }
 
     public String toString(){

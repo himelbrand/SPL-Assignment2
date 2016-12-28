@@ -25,7 +25,7 @@ public class WorkStealingThreadPool {
         boolean myCheckIfSteal = false;
         int queueIdVictim = (processorId +1)%myDequeTasksArray.length;
         int queueVictimSize;
-        System.out.println(Thread.currentThread().getName() + "try to steal tasks");
+     //   System.out.println(Thread.currentThread().getName() + "try to steal tasks");
         while(queueIdVictim != processorId) {
 
             queueVictimSize = myDequeTasksArray[queueIdVictim].size() / 2;

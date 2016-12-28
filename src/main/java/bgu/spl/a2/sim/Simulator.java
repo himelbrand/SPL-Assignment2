@@ -37,6 +37,7 @@ public class Simulator {
 	private static MainOrder myConfiguration;
     private static volatile  int ordersCount = 0;
 
+    volatile  static int i =0;
 	/**
 	* Begin the simulation
 	* Should not be called before attachWorkStealingThreadPool()
@@ -51,16 +52,15 @@ public class Simulator {
 
     	    for(MainOrder.Waves order:wave) {
 
-    	          ordersCount += (int)Integer.parseInt(order.qty);
+    	          ordersCount += Integer.parseInt(order.qty);
 
-    	        for(int i=0;i<Integer.parseInt(order.qty);i++) {
-                    ManufatoringTask orderTask = new ManufatoringTask(order.product, Long.parseLong(order.startId));
+    	        for( i=0;i<Integer.parseInt(order.qty);i++) {
+                    ManufatoringTask orderTask = new ManufatoringTask(order.product, Long.parseLong(order.startId) + i);
+                    orderTask.taskName = "Order." + order.product + "." + i;
                     orderTask.getResult().whenResolved(()->{
                         myProductsList.add(orderTask.getResult().get());
                         ordersCount--;
-                        System.out.println("###########created a :"+orderTask.getResult().get().getName()+"###############");
-                        System.out.println("##################3 ordersCount : "+ordersCount+"!!!!! ######################");
-                        System.out.println("products made : "+myProductsList.size()+"!!!!!");
+                        System.out.println("###########  created a :"+orderTask.getResult().get().getName()+"  ###############");
                         if(ordersCount == 0){
                             synchronized (lock) {
                                 lock.notifyAll();
@@ -76,8 +76,8 @@ public class Simulator {
             }
             synchronized (lock) {
                 try {
+                    System.out.println("wave is locked");
                     lock.wait();
-                    System.out.println("@@@@@@@@@@@@@@@@@@@@@@@2  locked @@@@@@@@@@@@@@@2@@@@@@");
                 } catch (InterruptedException e) {
                     System.out.println("moving to next wave");
                 }
@@ -102,7 +102,7 @@ public class Simulator {
 		pool = myWorkStealingThreadPool;
 	}
 	
-	public static int main(String [] args){
+	public static void main(String [] args){
 
         myWarehouse = new Warehouse();
         Gson gson = new Gson();
@@ -142,7 +142,8 @@ public class Simulator {
         try {
             fout = new FileOutputStream("result.ser");
             // This is the println of the content spouse to be in the output file, still not working
-            //System.out.println(SimulationResult);
+            System.out.println(SimulationResult);
+
             ObjectOutputStream oos = new ObjectOutputStream(fout);
             oos.writeObject(SimulationResult);
         } catch (Exception e) {
@@ -151,6 +152,5 @@ public class Simulator {
 
 
 
-		return 0;
 	}
 }
