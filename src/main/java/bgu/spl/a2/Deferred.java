@@ -60,7 +60,7 @@ public class Deferred<T> {
      */
     public void resolve(T value) {
         if(isResolved)
-            throw new IllegalStateException("Already resolved");
+            throw new IllegalStateException("Already resolvedd" + value.toString());
         isResolved=true;
         this.result=value;
         if(callback!=null) {

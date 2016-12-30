@@ -37,6 +37,7 @@ public class MergeSort extends Task<int[]> {
             myCollection.add(spwnTask2);
             whenResolved(myCollection, () -> {
                 int[] arr =mergeArrays(myCollection.get(0).getResult().get(), myCollection.get(1).getResult().get());
+
                     complete(arr);
             });
         }else{
@@ -73,7 +74,7 @@ public class MergeSort extends Task<int[]> {
 
     public static void main(String[] args) throws InterruptedException {
          final WorkStealingThreadPool pool = new WorkStealingThreadPool(10);
-        int n = 10000; //you may check on different number of elements if you like
+        int n = 1000000; //you may check on different number of elements if you like
         int[] array = new Random().ints(n).toArray();
         MergeSort task = new MergeSort(array);
         task.taskName = "Task_0";

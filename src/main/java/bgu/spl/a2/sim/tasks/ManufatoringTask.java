@@ -26,7 +26,7 @@ public class ManufatoringTask extends Task<Product> {
     private ManufactoringPlan plan;
     public CopyOnWriteArrayList<ManufatoringTask> myManufatoringTaskList;
     private CopyOnWriteArrayList<String> myToolsList;
-    private AtomicInteger toolsUsedCount;
+    volatile  private AtomicInteger toolsUsedCount;
 
     public ManufatoringTask(String productName,long startId){
         this.product = new Product(startId,productName);
@@ -48,22 +48,25 @@ public class ManufatoringTask extends Task<Product> {
         if(myManufatoringTaskList.size() != 0){
             spawn(myManufatoringTaskList.toArray(new ManufatoringTask[myManufatoringTaskList.size()]));
             ManufatoringTask taskReference = this;
+
             whenResolved(myManufatoringTaskList, () -> {
                 for(ManufatoringTask spawnManufatoringTask:myManufatoringTaskList)
                 {
                     taskReference.product.addPart(spawnManufatoringTask.getResult().get());
                 }
+
                 if(myToolsList.size()>0) {
                     for (String toolName : myToolsList) {
                         Deferred<Tool> myDeferred = Simulator.myWarehouse.acquireTool(toolName);
                         myDeferred.whenResolved(() -> {
                             product.setCurrentId(myDeferred.get().useOn(product));
-                            toolsUsedCount.decrementAndGet();
-                            Simulator.myWarehouse.releaseTool(myDeferred.get());
-                            System.out.println("task:" + this.taskName + " " + myToolsList.size() + " Tools are needed ,    " + toolsUsedCount.get() + "tools left");
-                            if (toolsUsedCount.get() == 0) {
-                                complete(product);
-                            }
+                                Simulator.myWarehouse.releaseTool(myDeferred.get());
+                                System.out.println("task:" + this.taskName + " " + myToolsList.size() + " Tools are needed ,    " + toolsUsedCount.get() + "tools left");
+                                if (toolsUsedCount.decrementAndGet() == 0) {
+
+                                    complete(product);
+                                }
+
                         });
                     }
                 }else{

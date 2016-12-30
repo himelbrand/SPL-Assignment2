@@ -11,6 +11,7 @@ import bgu.spl.a2.sim.tasks.ManufatoringTask;
 import bgu.spl.a2.sim.tools.GcdScrewDriver;
 import bgu.spl.a2.sim.tools.NextPrimeHammer;
 import bgu.spl.a2.sim.tools.RandomSumPliers;
+import bgu.spl.a2.sim.tools.Tool;
 import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonReader;
 import jdk.nashorn.internal.parser.JSONParser;
@@ -37,7 +38,6 @@ public class Simulator {
 	private static MainOrder myConfiguration;
     private static volatile  int ordersCount = 0;
 
-    volatile  static int i =0;
 	/**
 	* Begin the simulation
 	* Should not be called before attachWorkStealingThreadPool()
@@ -54,7 +54,7 @@ public class Simulator {
 
     	          ordersCount += Integer.parseInt(order.qty);
 
-    	        for( i=0;i<Integer.parseInt(order.qty);i++) {
+    	        for(int  i=0;i<Integer.parseInt(order.qty);i++) {
                     ManufatoringTask orderTask = new ManufatoringTask(order.product, Long.parseLong(order.startId) + i);
                     orderTask.taskName = "Order." + order.product + "." + i;
                     orderTask.getResult().whenResolved(()->{
@@ -138,17 +138,9 @@ public class Simulator {
 
         ConcurrentLinkedQueue<Product> SimulationResult;
         SimulationResult = Simulator.start();
-        FileOutputStream fout = null;
-        try {
-            fout = new FileOutputStream("result.ser");
-            // This is the println of the content spouse to be in the output file, still not working
-            System.out.println(SimulationResult);
+        //System.out.println(SimulationResult);
+        // fout = null;
 
-            ObjectOutputStream oos = new ObjectOutputStream(fout);
-            oos.writeObject(SimulationResult);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
 
 

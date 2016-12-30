@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Warehouse {
 
 
-	private AtomicInteger gcdScrewDriverToolCount;
-	private AtomicInteger nextPrimeHammerToolCount;
-	private AtomicInteger randomSumPliersHammerToolCount;
+	volatile private AtomicInteger gcdScrewDriverToolCount;
+	volatile private AtomicInteger nextPrimeHammerToolCount;
+	volatile private AtomicInteger randomSumPliersHammerToolCount;
 
 	private ConcurrentLinkedQueue<Deferred<Tool>> gcdScrewDriverDeferredList;
 	private ConcurrentLinkedQueue<Deferred<Tool>> nextPrimeHammerDeferredList ;
@@ -52,64 +52,71 @@ public class Warehouse {
 	 * @param type - string describing the required tool
 	 * @return a deferred promise for the  requested tool
 	 */
-	public Deferred<Tool> acquireTool(String type){
-		Deferred<Tool> newTool = new Deferred<Tool>();
-		switch(type){
-			case "np-hammer":
-				if(nextPrimeHammerToolCount.get() != 0){
-					nextPrimeHammerToolCount.decrementAndGet();
-					newTool.resolve(new NextPrimeHammer());
-				}else
-					nextPrimeHammerDeferredList.add(newTool);
-				break;
-			case "rs-pliers":
-				if(randomSumPliersHammerToolCount.get() != 0){
-					randomSumPliersHammerToolCount.decrementAndGet();
-					newTool.resolve(new RandomSumPliers());
-				}else
-					randomSumPliersDeferredList.add(newTool);
-				break;
-			case "gs-driver":
-				if(gcdScrewDriverToolCount.get() != 0){
-					gcdScrewDriverToolCount.decrementAndGet();
-					newTool.resolve(new GcdScrewDriver());
-				}else{
-					gcdScrewDriverDeferredList.add(newTool);
-				}
-				break;
+	public  Deferred<Tool> acquireTool(String type) {
+			Deferred<Tool> newTool = new Deferred<>();
+			switch (type) {
+				case "np-hammer":
+					if (nextPrimeHammerToolCount.get() != 0) {
+						nextPrimeHammerToolCount.decrementAndGet();
+						newTool.resolve(new NextPrimeHammer());
+					} else
+						nextPrimeHammerDeferredList.add(newTool);
+					break;
+				case "rs-pliers":
+					if (randomSumPliersHammerToolCount.get() != 0) {
+						randomSumPliersHammerToolCount.decrementAndGet();
+						newTool.resolve(new RandomSumPliers());
+					} else
+						randomSumPliersDeferredList.add(newTool);
+					break;
+				case "gs-driver":
+					if (gcdScrewDriverToolCount.get() != 0) {
+						gcdScrewDriverToolCount.decrementAndGet();
+						newTool.resolve(new GcdScrewDriver());
+					} else {
+						gcdScrewDriverDeferredList.add(newTool);
+					}
+					break;
+			}
+			System.out.println("gcdScrewDriver : " + gcdScrewDriverToolCount.get() + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount.get() + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount.get());
+			return newTool;
 		}
-		System.out.println("gcdScrewDriver : " + gcdScrewDriverToolCount + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount);
-		return newTool;
-	}
 
 	/**
 	 * Tool return procedure - releases a tool which becomes available in the warehouse upon completion.
 	 * @param tool - The tool to be returned
 	 */
-	public void releaseTool(Tool tool){
-        Deferred<Tool> tempDeff;
-		switch(tool.getType()){
-			case "np-hammer":
-				nextPrimeHammerToolCount.incrementAndGet();
-                tempDeff = nextPrimeHammerDeferredList.poll();
-				    if(tempDeff != null)
-					tempDeff.resolve(new NextPrimeHammer());
-				break;
-			case "rs-pliers":
-				randomSumPliersHammerToolCount.incrementAndGet();
-                tempDeff = randomSumPliersDeferredList.poll();
-                if(tempDeff != null)
-                    tempDeff.resolve(new RandomSumPliers());
-				break;
-			case "gs-driver":
-				gcdScrewDriverToolCount.incrementAndGet();
-                tempDeff = gcdScrewDriverDeferredList.poll();
-                if(tempDeff != null)
-                    tempDeff.resolve(new GcdScrewDriver());
-				break;
+	public  void releaseTool(Tool tool) {
+			Deferred<Tool> tempDeff;
+			switch (tool.getType()) {
+				case "np-hammer":
+					nextPrimeHammerToolCount.incrementAndGet();
+					tempDeff = nextPrimeHammerDeferredList.poll();
+					if (tempDeff != null) {
+						nextPrimeHammerToolCount.decrementAndGet();
+						tempDeff.resolve(new NextPrimeHammer());
+
+					}
+					break;
+				case "rs-pliers":
+					randomSumPliersHammerToolCount.incrementAndGet();
+					tempDeff = randomSumPliersDeferredList.poll();
+					if (tempDeff != null) {
+						randomSumPliersHammerToolCount.decrementAndGet();
+						tempDeff.resolve(new RandomSumPliers());
+					}
+					break;
+				case "gs-driver":
+					gcdScrewDriverToolCount.incrementAndGet();
+					tempDeff = gcdScrewDriverDeferredList.poll();
+					if (tempDeff != null) {
+						gcdScrewDriverToolCount.decrementAndGet();
+						tempDeff.resolve(new GcdScrewDriver());
+					}
+					break;
+			}
+			System.out.println("gcdScrewDriver : " + gcdScrewDriverToolCount.get() + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount.get() + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount.get());
 		}
-		System.out.println("gcdScrewDriver : " + gcdScrewDriverToolCount + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount);
-	}
 
 
 	/**
