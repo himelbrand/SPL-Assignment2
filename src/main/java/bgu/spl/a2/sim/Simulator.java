@@ -19,6 +19,7 @@ import jdk.nashorn.internal.parser.JSONParser;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 
@@ -37,6 +38,7 @@ public class Simulator {
 	private static WorkStealingThreadPool pool;
 	private static MainOrder myConfiguration;
     private static volatile  int ordersCount = 0;
+    private static Product[] orderProductArray;
 
 	/**
 	* Begin the simulation
@@ -50,6 +52,15 @@ public class Simulator {
         pool.start();
     	for(MainOrder.Waves[] wave:myConfiguration.waves) {
 
+
+            int sum =0 ;
+            int firstIndex =0 ;
+
+            for(MainOrder.Waves order:wave){
+                sum += Integer.parseInt(order.qty);
+            }
+            orderProductArray = new Product[sum];
+
     	    for(MainOrder.Waves order:wave) {
 
     	          ordersCount += Integer.parseInt(order.qty);
@@ -57,8 +68,17 @@ public class Simulator {
     	        for(int  i=0;i<Integer.parseInt(order.qty);i++) {
                     ManufatoringTask orderTask = new ManufatoringTask(order.product, Long.parseLong(order.startId) + i);
                     orderTask.taskName = "Order." + order.product + "." + i;
+
+                    int firstIndexCopy = firstIndex;
+                    long tempOrderId = Long.parseLong(order.startId);
+                    int asd = (int)tempOrderId + firstIndex;
                     orderTask.getResult().whenResolved(()->{
-                        myProductsList.add(orderTask.getResult().get());
+
+                        Product tempProduct= orderTask.getResult().get();
+                    //   myProductsList.add(tempProduct);
+
+                        orderProductArray[firstIndexCopy + (int)(orderTask.getResult().get().getStartId() - tempOrderId)] = orderTask.getResult().get();
+                       // System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + (firstIndexCopy + (int)(orderTask.getResult().get().getStartId() - tempOrderId)));
                         ordersCount--;
                         System.out.println("###########  created a :"+orderTask.getResult().get().getName()+"  ###############");
                         if(ordersCount == 0){
@@ -69,9 +89,10 @@ public class Simulator {
 
 
                     });
+
                     pool.submit(orderTask);
                 }
-
+                firstIndex += Integer.parseInt(order.qty);
 
             }
             synchronized (lock) {
@@ -82,6 +103,10 @@ public class Simulator {
                     System.out.println("moving to next wave");
                 }
             }
+            for(Product product:orderProductArray){
+                myProductsList.add(product);
+            }
+
             System.out.println("moving to next wave");
 
         }
@@ -96,12 +121,12 @@ public class Simulator {
 
 	/**
 	* attach a WorkStealingThreadPool to the Simulator, this WorkStealingThreadPool will be used to run the simulation
-	* @param myWorkStealingThreadPool - the WorkStealingThreadPool which will be used by the simulator
+	* @param myWorkStealingThreadPool - the Wo  rkStealingThreadPool which will be used by the simulator
 	*/
 	public static void attachWorkStealingThreadPool(WorkStealingThreadPool myWorkStealingThreadPool){
 		pool = myWorkStealingThreadPool;
 	}
-	
+
 	public static void main(String [] args){
 
         myWarehouse = new Warehouse();
@@ -138,9 +163,7 @@ public class Simulator {
 
         ConcurrentLinkedQueue<Product> SimulationResult;
         SimulationResult = Simulator.start();
-        //System.out.println(SimulationResult);
-        // fout = null;
-
+        System.out.println(SimulationResult);
 
 
 
