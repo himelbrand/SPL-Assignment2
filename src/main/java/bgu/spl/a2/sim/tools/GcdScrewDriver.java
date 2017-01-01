@@ -5,7 +5,7 @@ import bgu.spl.a2.sim.Product;
 import java.math.BigInteger;
 
 /**
- * Created by himelbrand on 12/27/16.
+ * A class that represents a GcdScrewDriver tool
  */
 public class GcdScrewDriver implements Tool {
     @Override
@@ -23,12 +23,20 @@ public class GcdScrewDriver implements Tool {
         }
         return value;
     }
+    /**
+     * @param id - The product id.
+     * @return - The greatest common divider of the product id and the product id reverse.
+     */
     public long func(long id){
         BigInteger b1 = BigInteger.valueOf(id);
         BigInteger b2 = BigInteger.valueOf(reverse(id));
         long value= (b1.gcd(b2)).longValue();
         return value;
     }
+    /**
+     * @param n - A number
+     * @return - The reverse number of the given number (i.e 1234 and 4321)
+     */
     public long reverse(long n){
         long reverse=0;
         while( n != 0 ){
@@ -38,27 +46,4 @@ public class GcdScrewDriver implements Tool {
         }
         return reverse;
     }
-//    public long useOn(Product p) {
-//        long ans=0;
-//        BigInteger idReverse;
-//        BigInteger id;
-//        BigInteger gcd;
-//        for (Product part:p.getParts()) {
-//            id = BigInteger.valueOf(part.getFinalId());
-//            idReverse = BigInteger.valueOf(getReversedLong(part.getFinalId()));
-//            gcd=id.gcd(idReverse);
-//            ans+=Math.abs(gcd.longValue());
-//        }
-//        return ans;
-//    }
-//    private long getReversedLong(long num){
-//        long reversed = 0;
-//        while( num != 0 )
-//        {
-//            reversed = reversed * 10;
-//            reversed = reversed + num%10;
-//            num = num/10;
-//        }
-//        return reversed;
-//    }
 }

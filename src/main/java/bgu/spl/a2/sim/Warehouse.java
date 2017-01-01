@@ -1,13 +1,11 @@
 package bgu.spl.a2.sim;
 
-import bgu.spl.a2.sim.tasks.ManufatoringTask;
 import bgu.spl.a2.sim.tools.GcdScrewDriver;
 import bgu.spl.a2.sim.tools.NextPrimeHammer;
 import bgu.spl.a2.sim.tools.RandomSumPliers;
 import bgu.spl.a2.sim.tools.Tool;
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
 import bgu.spl.a2.Deferred;
-
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -23,10 +21,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Warehouse {
 
 
+	/**
+	 * counters for each one of the tool types.
+	 */
 	volatile private AtomicInteger gcdScrewDriverToolCount;
 	volatile private AtomicInteger nextPrimeHammerToolCount;
 	volatile private AtomicInteger randomSumPliersHammerToolCount;
 
+	/**
+	 * LinkedQueue for each one of the tool types,
+	 * representing past requests for tools that weren't available at that time.
+	 */
 	private ConcurrentLinkedQueue<Deferred<Tool>> gcdScrewDriverDeferredList;
 	private ConcurrentLinkedQueue<Deferred<Tool>> nextPrimeHammerDeferredList ;
 	private ConcurrentLinkedQueue<Deferred<Tool>> randomSumPliersDeferredList ;
@@ -52,7 +57,7 @@ public class Warehouse {
 	 * @param type - string describing the required tool
 	 * @return a deferred promise for the  requested tool
 	 */
-	public  Deferred<Tool> acquireTool(String type) {
+	public Deferred<Tool> acquireTool(String type) {
 			Deferred<Tool> newTool = new Deferred<>();
 			switch (type) {
 				case "np-hammer":
@@ -86,7 +91,7 @@ public class Warehouse {
 	 * Tool return procedure - releases a tool which becomes available in the warehouse upon completion.
 	 * @param tool - The tool to be returned
 	 */
-	public  void releaseTool(Tool tool) {
+	public void releaseTool(Tool tool) {
 			Deferred<Tool> tempDeff;
 			switch (tool.getType()) {
 				case "np-hammer":
@@ -125,14 +130,12 @@ public class Warehouse {
 	 * @return A ManufactoringPlan for product
 	 */
 	public ManufactoringPlan getPlan(String product){
-		ManufactoringPlan myManufactoringPlansToReturn = null;
-		for(ManufactoringPlan myManufactoringPlans:manufactoringPlansList){
-			if(myManufactoringPlans.getProductName().equals(product))
-				myManufactoringPlansToReturn =  myManufactoringPlans;
+		ManufactoringPlan myManufactoringPlanToReturn = null;
+		for(ManufactoringPlan myManufactoringPlan:manufactoringPlansList){
+			if(myManufactoringPlan.getProductName().equals(product))
+				myManufactoringPlanToReturn =  myManufactoringPlan;
 		}
-//		if(myManufactoringPlansToReturn == null)
-//			throw new IllegalStateException("no plan exist with product name of /" + product);
-		return myManufactoringPlansToReturn;
+		return myManufactoringPlanToReturn;
 	}
 
 	/**

@@ -7,6 +7,7 @@ import java.util.List;
  * A class that represents a product produced during the simulation.
  */
 public class Product implements java.io.Serializable{
+
 	private final long startId;
 	volatile  private long currentId;
 	private String name;
@@ -41,11 +42,11 @@ public class Product implements java.io.Serializable{
 	* @return The product final ID as a long. 
 	* final ID is the ID the product received as the sum of all UseOn(){} 
 	*/
-    public long getFinalId(){
-		synchronized (this) {
-            return currentId;
-        }
-	}
+		public long getFinalId(){
+		//	synchronized (this) {
+				return currentId;
+		  //  }
+		}
 
 	/**
 	* @return Returns all parts of this product as a List of Products
@@ -62,13 +63,23 @@ public class Product implements java.io.Serializable{
 		parts.add(p);
 	}
 
+	/**
+	 * set the current id of a product ,
+	 * @param id - id to be added to the current id of the product
+	 * This method have to be synchronized because its relay on the currentId that can be change
+	 *			inside this method. if two objects change the currentId  of a product at the same time using this method,
+	 *		    there is a chance that without synchronized , only one of the changes will apply.
+	 */
 	public void setCurrentId(long id){
         synchronized (this) {
             this.currentId += id;
         }
     }
 
-    public String toString(){
+	/**
+	 * prints the product name and every one of his parts
+	 */
+	public String toString(){
 		String ans="\nProductName: "+name+"  Product Id = "+currentId;
 		ans+="\nPartsList {";
 		for (Product part:parts) {

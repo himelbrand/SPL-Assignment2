@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package bgu.spl.a2.sim;
 
 import bgu.spl.a2.WorkStealingThreadPool;
@@ -11,21 +6,9 @@ import bgu.spl.a2.sim.tasks.ManufatoringTask;
 import bgu.spl.a2.sim.tools.GcdScrewDriver;
 import bgu.spl.a2.sim.tools.NextPrimeHammer;
 import bgu.spl.a2.sim.tools.RandomSumPliers;
-import bgu.spl.a2.sim.tools.Tool;
-import com.google.gson.JsonElement;
-import com.google.gson.stream.JsonReader;
-import jdk.nashorn.internal.parser.JSONParser;
-
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Locale;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
-
-
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 
 
@@ -49,6 +32,7 @@ public class Simulator {
 
         Object lock = new Object();
         ConcurrentLinkedQueue<Product> myProductsList = new ConcurrentLinkedQueue<>();
+        Simulator.attachWorkStealingThreadPool(new WorkStealingThreadPool(Integer.parseInt(myConfiguration.threads)));
         pool.start();
     	for(MainOrder.Waves[] wave:myConfiguration.waves) {
 
@@ -71,17 +55,12 @@ public class Simulator {
 
                     int firstIndexCopy = firstIndex;
                     long tempOrderId = Long.parseLong(order.startId);
-                    int asd = (int)tempOrderId + firstIndex;
                     orderTask.getResult().whenResolved(()->{
-
-                        Product tempProduct= orderTask.getResult().get();
-                    //   myProductsList.add(tempProduct);
-
                         orderProductArray[firstIndexCopy + (int)(orderTask.getResult().get().getStartId() - tempOrderId)] = orderTask.getResult().get();
-                       // System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + (firstIndexCopy + (int)(orderTask.getResult().get().getStartId() - tempOrderId)));
                         ordersCount--;
                         System.out.println("###########  created a :"+orderTask.getResult().get().getName()+"  ###############");
                         if(ordersCount == 0){
+                            //We use synchronized so only one wave will be produced at a time
                             synchronized (lock) {
                                 lock.notifyAll();
                             }
@@ -95,6 +74,7 @@ public class Simulator {
                 firstIndex += Integer.parseInt(order.qty);
 
             }
+            //We use synchronized so only one wave will be produced at a time
             synchronized (lock) {
                 try {
                     System.out.println("wave is locked");
@@ -130,15 +110,15 @@ public class Simulator {
 	public static void main(String [] args){
 
         myWarehouse = new Warehouse();
-        Gson gson = new Gson();
 
+        //Read the configuration file and turn into a java object (MainOrder Object(
+        Gson gson = new Gson();
         try {
             myConfiguration = gson.fromJson(new FileReader(args[0]), MainOrder.class);
         } catch (FileNotFoundException e) {
             System.out.println("Configuration file not found.");
         }
 
-        Simulator.attachWorkStealingThreadPool(new WorkStealingThreadPool(Integer.parseInt(myConfiguration.threads)));
 
         //Add tools to warehouse
         for(MainOrder.Tools tool: myConfiguration.tools){
@@ -161,11 +141,24 @@ public class Simulator {
         }
 
 
+        //will eventually contain all the products that were made
         ConcurrentLinkedQueue<Product> SimulationResult;
+
         SimulationResult = Simulator.start();
-        System.out.println(SimulationResult);
+
+        //Writing result to an output file
+        FileOutputStream fout;
+        try {
+            fout = new FileOutputStream("result.ser");
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+            oos.writeObject(SimulationResult);
+            oos.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("The file not found");
+        } catch (IOException e) {
+            System.out.println("Problem writing result to the result.ser file");
+        }
 
 
-
-	}
+    }
 }

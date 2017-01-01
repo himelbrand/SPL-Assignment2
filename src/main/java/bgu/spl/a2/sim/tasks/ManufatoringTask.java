@@ -4,33 +4,30 @@ import bgu.spl.a2.Deferred;
 import bgu.spl.a2.Task;
 import bgu.spl.a2.sim.Product;
 import bgu.spl.a2.sim.Simulator;
-import bgu.spl.a2.sim.Warehouse;
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
 import bgu.spl.a2.sim.tools.Tool;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created by Shahar on 27/12/2016.
- */
-
-
+ * A class that represents a manufacturing task.
+ * each task eventually produced a product.
+ **/
 public class ManufatoringTask extends Task<Product> {
 
     private  Product product;
-    private ManufactoringPlan plan;
-    public CopyOnWriteArrayList<ManufatoringTask> myManufatoringTaskList;
+    private CopyOnWriteArrayList<ManufatoringTask> myManufatoringTaskList;
     private CopyOnWriteArrayList<String> myToolsList;
     volatile  private AtomicInteger toolsUsedCount;
 
+    /** ManufatoringTask constructor
+     * @param productName - the product name to be created
+     * @param startId - The start id of the product.
+     */
     public ManufatoringTask(String productName,long startId){
+
         this.product = new Product(startId,productName);
-        plan = Simulator.myWarehouse.getPlan(productName);
+        ManufactoringPlan plan = Simulator.myWarehouse.getPlan(productName);
         myManufatoringTaskList = new CopyOnWriteArrayList<>();
         myToolsList = new CopyOnWriteArrayList<>();
         for(String partName:plan.getParts()){
@@ -44,6 +41,12 @@ public class ManufatoringTask extends Task<Product> {
     }
 
     @Override
+    /**
+     * start handling the task.
+     * The method {@link Task#spawn(Task[])} new tasks respectively to the parts this product is needed (each parts is another product).
+     * After the parts are ready ,they are add to the product part list.
+     * Then we use each one of the tools accoring to the product plan and use them on the parts to get the final id of the product.
+     */
     protected void start() {
         if(myManufatoringTaskList.size() != 0){
             spawn(myManufatoringTaskList.toArray(new ManufatoringTask[myManufatoringTaskList.size()]));
@@ -72,7 +75,6 @@ public class ManufatoringTask extends Task<Product> {
                 }else{
                     for (Product part:product.getParts())
                         product.setCurrentId(part.getFinalId());
-
                     complete(product);
                 }
 

@@ -1,13 +1,13 @@
 package bgu.spl.a2.sim.conf;
 
 /**
- * a class that represents a manufacturing plan.
- *
+ * A class that represents a manufacturing plan.
  **/
 public class ManufactoringPlan {
 	private String product;
 	private String[] parts;
 	private String[] tools;
+
 	/** ManufactoringPlan constructor
 	* @param product - product name
 	* @param parts - array of strings describing the plans part names
