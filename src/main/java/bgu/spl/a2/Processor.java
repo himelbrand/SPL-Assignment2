@@ -61,7 +61,8 @@ public class Processor implements Runnable {
             if(currentTask != null){//if the queue was'nt empty handles the task
                 waitingTask.addFirst(currentTask);
                 currentTask.handle(this);
-            }else{//else try to steal from other queues
+            }else{
+                //else try to steal from other queues
                 boolean stole = pool.stealTasks(id);
                 if(!stole) {
                     int currentVersion = pool.myVersionMonitor.getVersion();
@@ -70,7 +71,8 @@ public class Processor implements Runnable {
                         waitingTask.addFirst(currentTask);
                         currentTask.handle(this);
                     } else {
-                        try {//didn't steal and have no work in queue , await
+                        try {
+                            //didn't steal and have no work in queue , await
                             pool.myVersionMonitor.await(currentVersion);
                         } catch (InterruptedException e) {
                             running = false;

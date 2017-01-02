@@ -6,6 +6,7 @@ import bgu.spl.a2.sim.Product;
 import bgu.spl.a2.sim.Simulator;
 import bgu.spl.a2.sim.conf.ManufactoringPlan;
 import bgu.spl.a2.sim.tools.Tool;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,6 +34,7 @@ public class ManufatoringTask extends Task<Product> {
         for(String partName:plan.getParts()){
             myManufatoringTaskList.add(new ManufatoringTask(partName,startId + 1));
         }
+
         for(String toolName:plan.getTools()){
             myToolsList.add(toolName);
         }

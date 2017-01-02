@@ -1,7 +1,5 @@
 package bgu.spl.a2;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -73,18 +71,17 @@ public abstract class Task<R> {
      * Implementors note: make sure that the callback is running only once when
      * all the given tasks completed.
      *
-     * @param tasks
+     * @param tasks a collection of all the spawned tasks
      * @param callback the callback to execute once all the results are resolved
      */
 
 
     protected final void whenResolved(Collection<? extends Task<?>> tasks, Runnable callback) {
         taskCallBack = callback;
-
         Task<?> taskReference = this;
 
         for (Task<?> spawnTask:tasks) {
-                spawnTask.myDeferred.whenResolved(()->{taskReference.whenSubTaskComplete();});
+                spawnTask.myDeferred.whenResolved(taskReference::whenSubTaskComplete);
         }
     }
 

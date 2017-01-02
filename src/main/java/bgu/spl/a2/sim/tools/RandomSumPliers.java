@@ -25,7 +25,7 @@ public class RandomSumPliers implements Tool {
      * @param id - The product id.
      * @return - A sum of random integers (id %10000) from a random object.
      */
-    public long func(long id){
+    private long func(long id){
         Random r = new Random(id);
         long  sum = 0;
         for (long i = 0; i < id % 10000; i++) {

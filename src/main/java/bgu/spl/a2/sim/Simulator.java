@@ -54,7 +54,6 @@ public class Simulator {
                     orderTask.getResult().whenResolved(() -> {
                         orderProductArray[firstIndexCopy + (int) (orderTask.getResult().get().getStartId() - tempOrderId)] = orderTask.getResult().get();
                         if (ordersCount.decrementAndGet() == 0) {
-                            System.out.println("unlock wave");
                             //We use synchronized so only one wave will be produced at a time
                             synchronized (lock) {
                                 lock.notifyAll();
