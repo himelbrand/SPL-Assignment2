@@ -1,7 +1,6 @@
 package bgu.spl.a2.sim.tools;
 
 import bgu.spl.a2.sim.Product;
-
 import java.math.BigInteger;
 
 /**

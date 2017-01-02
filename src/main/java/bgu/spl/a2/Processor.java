@@ -21,8 +21,6 @@ public class Processor implements Runnable {
     private final int id;
     LinkedList<Task<?>> waitingTask;
     private boolean running = true;
-
-
     /**
      * constructor for this class
      *
@@ -48,10 +46,6 @@ public class Processor implements Runnable {
     void addTask(Task<?> task){
         pool.myDequeTasksArray[id].addLast(task);
         pool.myVersionMonitor.inc();
-    }
-
-    int getId(){
-        return id;
     }
 
     /**

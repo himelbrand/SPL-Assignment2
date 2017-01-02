@@ -17,7 +17,6 @@ public class RandomSumPliers implements Tool {
         long value=0;
         for(Product part : p.getParts()){
             value+=Math.abs(func(part.getFinalId()));
-
         }
         return value;
     }
