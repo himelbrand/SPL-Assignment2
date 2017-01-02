@@ -22,7 +22,6 @@ public class VersionMonitor {
     private final  Object lock = new Object();
 
     /**
-     *
      * @return The current version of version monitor
      */
     public int getVersion() {
@@ -45,7 +44,7 @@ public class VersionMonitor {
      * in this method we use synchronized on lock and the wait is also on lock, so if started to wait the lock is released,
      * so other threads can wait or use {@link #inc()}.
      * when notified by {@link #inc()} continue to run, no longer in wait.
-     * @param version
+     * @param version the version number that will be waited to change
      * @throws InterruptedException
      */
     public void await(int version) throws InterruptedException {

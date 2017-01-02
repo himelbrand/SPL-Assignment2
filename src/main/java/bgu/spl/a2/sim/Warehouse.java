@@ -56,7 +56,7 @@ public class Warehouse {
 	}
 	/**
 	 * Tool acquisition procedure
-	 * Note that this procedure is non-blocking and should return immediatly
+	 * Note that this procedure is non-blocking and should return immediately
      *
      * We used synchronized here because the term of actions is depending on each one of the tools counter,
      * That is why we had to create lock for each one of the cases, not letting other threads to change their value while we
@@ -149,9 +149,9 @@ public class Warehouse {
 
 
 	/**
-	 * Getter for ManufactoringPlans
-	 * @param product - a string with the product name for which a ManufactoringPlan is desired
-	 * @return A ManufactoringPlan for product
+	 * Getter for ManufacturingPlans
+	 * @param product - a string with the product name for which a ManufacturingPlan is desired
+	 * @return A ManufacturingPlan for product
 	 */
 	public ManufactoringPlan getPlan(String product){
 		ManufactoringPlan myManufactoringPlanToReturn = null;
@@ -163,8 +163,8 @@ public class Warehouse {
 	}
 
 	/**
-	 * Store a ManufactoringPlan in the warehouse for later retrieval
-	 * @param plan - a ManufactoringPlan to be stored
+	 * Store a ManufacturingPlan in the warehouse for later retrieval
+	 * @param plan - a ManufacturingPlan to be stored
 	 */
 	public void addPlan(ManufactoringPlan plan){
 		manufactoringPlansList.add(plan);
