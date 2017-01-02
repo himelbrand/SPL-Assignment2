@@ -16,27 +16,17 @@ import java.util.Collection;
  * @param <R> the task result type
  */
 public abstract class Task<R> {
-
-    private Deferred<R> myDeferred = new Deferred<R>();
-
+    private Deferred<R> myDeferred = new Deferred<>();
     private int spawnTasksCount = 0;
-
     private Runnable taskCallBack;
-
     private boolean taskStarted = false;
-
     private Processor myProcessor;
-
-    //public String taskName;
-
-    volatile int i =0;
     /**
      * start handling the task - note that this method is protected, a handler
      * cannot call it directly but instead must use the
      * {@link #handle(bgu.spl.a2.Processor)} method
      */
     protected abstract void start();
-
     /**
      *
      * start/continue handling the task
@@ -62,11 +52,6 @@ public abstract class Task<R> {
             taskCallBack.run();
         }
     }
-
-    protected Processor getProcessor(){
-        return this.myProcessor;
-    }
-
     /**
      * This method schedules a new task (a child of the current task) to the
      * same processor which currently handles this task.

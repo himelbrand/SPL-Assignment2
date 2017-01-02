@@ -1,9 +1,6 @@
 package bgu.spl.a2.sim.tools;
 
 import bgu.spl.a2.sim.Product;
-
-import java.math.BigInteger;
-
 /**
  * A class that represents a NextPrimeHammer tool
  */
@@ -49,7 +46,6 @@ public class NextPrimeHammer implements Tool {
                 return false;
             }
         }
-
         return true;
     }
 }

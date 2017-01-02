@@ -37,7 +37,7 @@ public class DeferredTest {
      */
     private Deferred<Integer> createDeferred() {
 
-        return new Deferred<Integer>();
+        return new Deferred<>();
     }
 
 
