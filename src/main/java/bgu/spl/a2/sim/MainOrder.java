@@ -7,8 +7,12 @@ import bgu.spl.a2.sim.conf.ManufactoringPlan;
  * to here.
  * The purpose of the class is to turn the configuration file into a java object.
  */
-public class MainOrder {
-
+class MainOrder {
+    //Main Order Fields
+    ManufactoringPlan[] plans;
+    Tools[] tools;
+    String threads;
+    Waves[][] waves;
     /**
      * A class that represents the waves in the configuration file
      */
@@ -24,14 +28,8 @@ public class MainOrder {
     /**
      * A class that represents the tools in the configuration file
      */
-    public class Tools{
+    class Tools{
         String tool;
         String qty;
     }
-
-    //Main Order Fields
-    ManufactoringPlan[] plans;
-    Tools[] tools;
-    String threads;
-    Waves[][] waves;
 }

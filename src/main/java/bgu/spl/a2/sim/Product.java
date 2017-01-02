@@ -9,7 +9,7 @@ import java.util.List;
 public class Product implements java.io.Serializable{
 
 	private final long startId;
-	volatile  private long currentId;
+	volatile  private long currentId;//also known as the finalID
 	private String name;
 	private ArrayList<Product> parts;
 	/**
