@@ -67,7 +67,6 @@ public class ManufatoringTask extends Task<Product> {
                                 if (toolsUsedCount.decrementAndGet() == 0) {
                                     complete(product);
                                 }
-
                         });
                     }
                 }else{
