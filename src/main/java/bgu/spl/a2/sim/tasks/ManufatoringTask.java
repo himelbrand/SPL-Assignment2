@@ -71,8 +71,6 @@ public class ManufatoringTask extends Task<Product> {
                         });
                     }
                 }else{
-                    for (Product part:product.getParts())
-                        product.setCurrentId(part.getFinalId());
                     complete(product);
                 }
 

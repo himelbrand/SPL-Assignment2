@@ -174,6 +174,45 @@ public class Simulator {
             System.out.println("Problem writing result to the result.ser file");
         }
 
+        ConcurrentLinkedQueue<Product> temp = null;
+
+        FileInputStream fin = null;
+        ObjectInputStream ois = null;
+
+        try {
+
+            fin = new FileInputStream("result.ser");
+            ois = new ObjectInputStream(fin);
+            temp = (ConcurrentLinkedQueue<Product>) ois.readObject();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+
+            if (fin != null) {
+                try {
+                    fin.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+        for(Product product:temp){
+            System.out.println(product);
+        }
+
+
+
 
     }
 }

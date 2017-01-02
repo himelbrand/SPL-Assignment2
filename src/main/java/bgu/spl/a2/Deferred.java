@@ -1,6 +1,8 @@
 package bgu.spl.a2;
 
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 /**
  * this class represents a deferred result i.e., an object that eventually will
  * be resolved to hold a result of some operation, the class allows for getting
@@ -16,7 +18,7 @@ package bgu.spl.a2;
  * @param <T> the result type
  */
 public class Deferred<T> {
-    private Runnable callback;
+    private ConcurrentLinkedQueue<Runnable> callbackList = new ConcurrentLinkedQueue<>();
     private T result;
     private Boolean isResolved=false;
     /**
@@ -55,13 +57,13 @@ public class Deferred<T> {
      * resolved
      */
     public void resolve(T value) {
-        if(isResolved)
+        if (isResolved)
             throw new IllegalStateException("Already resolvedd" + value.toString());
-        isResolved=true;
-        this.result=value;
-        if(callback!=null) {
-            callback.run();
-            callback = null;
+        isResolved = true;
+        this.result = value;
+        for (Runnable callback : callbackList) {
+                callbackList.remove(callback);
+                callback.run();
         }
 
 
@@ -81,10 +83,10 @@ public class Deferred<T> {
      * resolved
      */
     public void whenResolved(Runnable callback) {
-        this.callback=callback;
+        callbackList.add(callback);
         if(isResolved) {
+            callbackList.remove(callback);
             callback.run();
-            this.callback=null;
         }
     }
 

@@ -84,6 +84,7 @@ public class DeferredTest {
     public void testResolve() throws Exception {
         deferredObject.resolve(valueToResolve);
         assertEquals(deferredObject.get(),valueToResolve);
+        deferredObject.whenResolved(callBack);
         assertEquals(testCallBackCounter.intValue(),2);
     }
 
@@ -110,7 +111,6 @@ public class DeferredTest {
         assertEquals(testCallBackCounter.intValue(),1);
         deferredObject.resolve(valueToResolve);
         assertEquals(testCallBackCounter.intValue(),2);
-        deferredObject.whenResolved(callBack);
         assertEquals(testCallBackCounter.intValue(),2);
     }
 
@@ -130,10 +130,6 @@ public class DeferredTest {
         callBack = null;
         valueToResolve = null;
         testCallBackCounter = null;
-        assertNull(deferredObject);
-        assertNull(callBack);
-        assertNull(valueToResolve);
-        assertNull(testCallBackCounter);
     }
 
 }
