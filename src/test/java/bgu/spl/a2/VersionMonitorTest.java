@@ -7,9 +7,6 @@ import org.junit.rules.Timeout;
 import static org.junit.Assert.*;
 
 
-/**
- * Created by himelbrand on 12/11/16.
- */
 public class VersionMonitorTest {
     private VersionMonitor versionMonitor;
     private Thread t1,t2;

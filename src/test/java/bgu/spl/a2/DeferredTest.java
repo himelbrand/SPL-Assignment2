@@ -6,9 +6,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by Shahar on 11/12/2016.
- */
 public class DeferredTest {
 
 
