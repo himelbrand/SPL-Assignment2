@@ -51,7 +51,6 @@ public class Simulator {
 
     	        for(int  i=0;i<Integer.parseInt(order.qty);i++) {
                     ManufatoringTask orderTask = new ManufatoringTask(order.product, Long.parseLong(order.startId) + i);
-                    orderTask.taskName = "Order." + order.product + "." + i;
 
                     int firstIndexCopy = firstIndex;
                     long tempOrderId = Long.parseLong(order.startId);

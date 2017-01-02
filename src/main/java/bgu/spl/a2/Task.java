@@ -27,7 +27,7 @@ public abstract class Task<R> {
 
     private Processor myProcessor;
 
-    public String taskName;
+    //public String taskName;
 
     volatile int i =0;
     /**
@@ -57,10 +57,8 @@ public abstract class Task<R> {
         myProcessor = handler;
         if(!taskStarted){
             taskStarted = true;
-         //   System.out.println(taskName + " started by thread-" + myProcessor.getId());
             start();
         }else{
-         //   System.out.println(taskName + " continued by thread-" + myProcessor.getId());
             taskCallBack.run();
         }
     }
@@ -79,10 +77,6 @@ public abstract class Task<R> {
 
         spawnTasksCount += task.length;
         for(Task<?> spawnTask:task){
-            spawnTask.taskName = taskName + "." +i;
-            i++;
-        //    System.out.println(taskName + " spawned "+ spawnTask.taskName);
-
             myProcessor.addTask(spawnTask);
         }
     }
@@ -105,20 +99,14 @@ public abstract class Task<R> {
         Task<?> taskReference = this;
 
         for (Task<?> spawnTask:tasks) {
-           // System.out.println("call back was registered to " + spawnTask.taskName);
-                spawnTask.myDeferred.whenResolved(()-> {
-                    taskReference.whenSubTaskComplete();
-                    System.out.println(spawnTask.taskName + " is resolved");
-                });
+                spawnTask.myDeferred.whenResolved(()->{taskReference.whenSubTaskComplete();});
         }
     }
 
-    //this method is synchronized so spawnTasksCount
+    //this method is synchronized so spawnTasksCount count will be correct
     synchronized private void whenSubTaskComplete(){
         spawnTasksCount--;
-       // System.out.println("spawnTasksCount  is " + spawnTasksCount);
         if(spawnTasksCount <= 0){
-            System.out.println(taskName +" returned to queue");
             myProcessor.addTask(this);
             myProcessor.waitingTask.remove(this);
         }
@@ -131,13 +119,11 @@ public abstract class Task<R> {
      * @param result - the task calculated result
      */
     protected final void complete(R result) {
-       // System.out.println(taskName + " is completed !" + Arrays.toString((int[])result));
         myProcessor.waitingTask.remove(this);
         try {
             myDeferred.resolve(result);
         }catch (Exception e){
-            System.out.println(taskName + " iss already resolved");
-            throw new IllegalStateException("Already resolvedd");
+            throw new IllegalStateException("Already resolved");
         }
 
     }

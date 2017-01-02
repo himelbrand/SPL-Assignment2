@@ -54,26 +54,29 @@ public class Processor implements Runnable {
         return id;
     }
 
-    @Override
+    /**
+     * This method is the Processor work scheme,
+     * work if can't then try to {@link WorkStealingThreadPool#stealTasks(int)} if stole then work.
+     * didn't steal try to work again in case a task was submitted to the queue.
+     * no work? then {@link VersionMonitor#await(int)}
+     */
     public void run(){
         while(running){
+            //pulls a new task from queue
             Task<?> currentTask = pool.myDequeTasksArray[id].pollFirst();
-          //  System.out.println(Thread.currentThread().getName() + " try to work");
-            if(currentTask != null){
+            if(currentTask != null){//if the queue was'nt empty handles the task
                 waitingTask.addFirst(currentTask);
                 currentTask.handle(this);
-            }else{
-                boolean tryToSteal = pool.stealTasks(id);
-                if(!tryToSteal) {
+            }else{//else try to steal from other queues
+                boolean stole = pool.stealTasks(id);
+                if(!stole) {
                     currentTask = pool.myDequeTasksArray[id].pollFirst();
-                    if (currentTask != null) {
+                    if (currentTask != null) {//didn't steal but have work in queue , handle task
                         waitingTask.addFirst(currentTask);
-                        //   System.out.println(currentTask.taskName + " entered waiting");
                         currentTask.handle(this);
                     } else {
-                        try {
+                        try {//didn't steal and have no work in queue , await
                             pool.myVersionMonitor.await(pool.myVersionMonitor.getVersion());
-
                         } catch (InterruptedException e) {
                             running = false;
                         }

@@ -1,9 +1,5 @@
 package bgu.spl.a2;
 
-import java.awt.*;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.LinkedList;
 
 /**
  * this class represents a deferred result i.e., an object that eventually will

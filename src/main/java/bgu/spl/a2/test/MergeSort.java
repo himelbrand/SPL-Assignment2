@@ -7,7 +7,6 @@ package bgu.spl.a2.test;
 
 import bgu.spl.a2.Task;
 import bgu.spl.a2.WorkStealingThreadPool;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -24,7 +23,6 @@ public class MergeSort extends Task<int[]> {
 
     @Override
     protected void start() {
-
         if (array.length > 1) {
             int middle = (array.length) / 2;
             int[] array1 = Arrays.copyOfRange(array, 0, middle);
@@ -44,7 +42,7 @@ public class MergeSort extends Task<int[]> {
             complete(array);
         }
     }
-
+    //implements the merging of smaller sorted arrays, used in merge sort
     private int[] mergeArrays(int[] array1, int[] array2) {
         int[] newArray = new int[array1.length + array2.length];
         int i=0,k=0,j =0;
@@ -77,26 +75,12 @@ public class MergeSort extends Task<int[]> {
         int n = 1000000; //you may check on different number of elements if you like
         int[] array = new Random().ints(n).toArray();
         MergeSort task = new MergeSort(array);
-        task.taskName = "Task_0";
         System.out.println(Arrays.toString(array));
         CountDownLatch l = new CountDownLatch(1);
-        long startTime =  System.currentTimeMillis();
         pool.start();
         pool.submit(task);
         task.getResult().whenResolved(() -> {
             System.out.println(Arrays.toString(task.getResult().get()));
-            //checks if result is a sorted array
-            int first = task.getResult().get()[0];
-            boolean check =true;
-            for(int i:task.getResult().get()){
-                if(i >= first)
-                    first=i;
-                else
-                    check = false;
-            }
-            long endTime =  System.currentTimeMillis();
-            System.out.println((endTime - startTime));
-            System.out.println(check);
             l.countDown();
         });
         l.await();

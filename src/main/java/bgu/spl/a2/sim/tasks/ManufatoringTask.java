@@ -64,9 +64,7 @@ public class ManufatoringTask extends Task<Product> {
                         myDeferred.whenResolved(() -> {
                             product.setCurrentId(myDeferred.get().useOn(product));
                                 Simulator.myWarehouse.releaseTool(myDeferred.get());
-                                System.out.println("task:" + this.taskName + " " + myToolsList.size() + " Tools are needed ,    " + toolsUsedCount.get() + "tools left");
                                 if (toolsUsedCount.decrementAndGet() == 0) {
-
                                     complete(product);
                                 }
 

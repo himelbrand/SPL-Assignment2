@@ -20,10 +20,19 @@ public class VersionMonitor {
 
     private int currentVersion;
     private final  Object lock = new Object();
+
+    /**
+     *
+     * @return The current version of version monitor
+     */
     public int getVersion() {
         return this.currentVersion;
     }
 
+    /**
+     *This method increments the version ,
+     * using synchronized on lock to avoid wrong count, so after increment notify all waiting on lock.
+     */
     public void inc() {
         synchronized (lock) {
             currentVersion++;
@@ -31,12 +40,18 @@ public class VersionMonitor {
         }
     }
 
+    /**
+     * This method receives the current version and while the version does'nt change the thread using this method will wait,
+     * in this method we use synchronized on lock and the wait is also on lock, so if started to wait the lock is released,
+     * so other threads can wait or use {@link #inc()}.
+     * when notified by {@link #inc()} continue to run, no longer in wait.
+     * @param version
+     * @throws InterruptedException
+     */
     public void await(int version) throws InterruptedException {
         synchronized (lock){
             while(version == getVersion()){
-                System.out.println( Thread.currentThread().getName() +" is enter waiting.");
                 lock.wait();
-                System.out.println( Thread.currentThread().getName() +" is exit waiting.");
             }
         }
     }

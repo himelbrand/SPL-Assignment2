@@ -1,9 +1,6 @@
 package bgu.spl.a2;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.Semaphore;
 /**
  * represents a work stealing thread pool - to understand what this class does
  * please refer to your assignment.
@@ -16,7 +13,7 @@ import java.util.concurrent.Semaphore;
  */
 public class WorkStealingThreadPool {
 
-    Processor[] myProcessorArray;
+    private Processor[] myProcessorArray;
     ConcurrentLinkedDeque<Task<?>>[] myDequeTasksArray;
     private  Thread[] myThreadsArray;
     VersionMonitor myVersionMonitor = new VersionMonitor();
@@ -25,17 +22,12 @@ public class WorkStealingThreadPool {
         boolean myCheckIfSteal = false;
         int queueIdVictim = (processorId +1)%myDequeTasksArray.length;
         int queueVictimSize;
-     //   System.out.println(Thread.currentThread().getName() + "try to steal tasks");
         while(queueIdVictim != processorId) {
-
             queueVictimSize = myDequeTasksArray[queueIdVictim].size() / 2;
-
             for (int i = 0; i < queueVictimSize; i++) {
-
                 Task<?> myTask = myDequeTasksArray[queueIdVictim].pollLast();
                 if(myTask != null) {
                     myDequeTasksArray[processorId].addFirst(myTask);
-                    System.out.println(myTask.taskName + " stolen from  Thread-" +queueIdVictim + " by  Thread-" + processorId);
                     myCheckIfSteal = true;
                 }else{
                     break;
@@ -70,8 +62,6 @@ public class WorkStealingThreadPool {
             myThreadsArray[i] = new Thread(myProcessorArray[i]);
             myDequeTasksArray[i] = new ConcurrentLinkedDeque<>();
         }
-        //TODO: replace method body with real implementation
-//        throw new UnsupportedOperationException("Not Implemented Yet.");
     }
 
     /**
@@ -118,9 +108,6 @@ public class WorkStealingThreadPool {
         for(int i=0;i<myProcessorArray.length;i++){
             myThreadsArray[i].start();
         }
-        //TODO: replace method body with real implementation
-        // throw new UnsupportedOperationException("Not Implemented Yet.");
-
     }
 
 }
