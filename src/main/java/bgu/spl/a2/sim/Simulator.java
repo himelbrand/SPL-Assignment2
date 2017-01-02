@@ -9,103 +9,77 @@ import bgu.spl.a2.sim.tools.RandomSumPliers;
 import java.io.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import com.google.gson.Gson;
-import com.sun.corba.se.spi.ior.ObjectKey;
-
 
 /**
  * A class describing the simulator for part 2 of the assignment
  */
 public class Simulator {
 
-	public static Warehouse myWarehouse;
-	private static WorkStealingThreadPool pool;
-	private static MainOrder myConfiguration;
+    public static Warehouse myWarehouse;
+    private static WorkStealingThreadPool pool;
+    private static MainOrder myConfiguration;
     private static volatile AtomicInteger ordersCount = new AtomicInteger(0);
     private static Product[] orderProductArray;
 
-	/**
-	* Begin the simulation
-	* Should not be called before attachWorkStealingThreadPool()
-	*/
-    public static ConcurrentLinkedQueue<Product> start(){
+    /**
+     * Begin the simulation
+     * Should not be called before attachWorkStealingThreadPool()
+     */
+    public static ConcurrentLinkedQueue<Product> start() {
 
 
         Object lock = new Object();
         ConcurrentLinkedQueue<Product> myProductsList = new ConcurrentLinkedQueue<>();
         Simulator.attachWorkStealingThreadPool(new WorkStealingThreadPool(Integer.parseInt(myConfiguration.threads)));
         pool.start();
-    	for(MainOrder.Waves[] wave:myConfiguration.waves) {
+        for (MainOrder.Waves[] wave : myConfiguration.waves) {
 
-
-            int sum =0 ;
-            int firstIndex =0 ;
-
-            for(MainOrder.Waves order:wave){
+            //Using a temp array for saving the product ,in each wave, in there right order( by final id)
+            int sum = 0;
+            int firstIndex = 0;
+            for (MainOrder.Waves order : wave) {
                 sum += Integer.parseInt(order.qty);
             }
             orderProductArray = new Product[sum];
 
-    	    for(MainOrder.Waves order:wave) {
-
-    	          ordersCount.addAndGet(Integer.parseInt(order.qty));
-
-    	        for(int  i=0;i<Integer.parseInt(order.qty);i++) {
+            for (MainOrder.Waves order : wave) {
+                ordersCount.addAndGet(Integer.parseInt(order.qty));
+                for (int i = 0; i < Integer.parseInt(order.qty); i++) {
                     ManufatoringTask orderTask = new ManufatoringTask(order.product, Long.parseLong(order.startId) + i);
 
                     int firstIndexCopy = firstIndex;
                     long tempOrderId = Long.parseLong(order.startId);
-                    orderTask.getResult().whenResolved(()->{
-                        orderProductArray[firstIndexCopy + (int)(orderTask.getResult().get().getStartId() - tempOrderId)] = orderTask.getResult().get();
-                      //   System.out.println(ordersCount);
-                        if(ordersCount.decrementAndGet() == 0){
+
+                    orderTask.getResult().whenResolved(() -> {
+                        orderProductArray[firstIndexCopy + (int) (orderTask.getResult().get().getStartId() - tempOrderId)] = orderTask.getResult().get();
+                        if (ordersCount.decrementAndGet() == 0) {
                             System.out.println("unlock wave");
                             //We use synchronized so only one wave will be produced at a time
                             synchronized (lock) {
                                 lock.notifyAll();
                             }
                         }
-
-
                     });
-
                     pool.submit(orderTask);
                 }
+                //Used for determined the right position for each order in the same wave in the orderProductArray
                 firstIndex += Integer.parseInt(order.qty);
-
             }
             //We use synchronized so only one wave will be produced at a time
             synchronized (lock) {
                 try {
-                    Thread t1 = new Thread(()->{
-                        while(!Thread.currentThread().isInterrupted()) {
-                            try {
-                                System.out.println("sleep");
-                                Thread.currentThread().sleep(1000);
-                            } catch (InterruptedException e) {
-                                System.out.println("interrupted ");
-                               Thread.currentThread().interrupt();
-                            }
-                            System.out.println(pool.getStatus());
-                        }
-                    });
-                   // t1.start();
-                    System.out.println("wave is locked");
                     lock.wait();
-                //    t1.interrupt();
                 } catch (InterruptedException e) {
-                    System.out.println("moving to next wave");
+                    System.out.println("Wave was interrupted");
                 }
             }
-            for(Product product:orderProductArray){
+
+            //Filling the product queue with all the product in right order from the current wave
+            for (Product product : orderProductArray) {
                 myProductsList.add(product);
             }
-
-            System.out.println("moving to next wave");
-
         }
-
         try {
             pool.shutdown();
         } catch (InterruptedException e) {
@@ -114,19 +88,19 @@ public class Simulator {
         return myProductsList;
     }
 
-	/**
-	* attach a WorkStealingThreadPool to the Simulator, this WorkStealingThreadPool will be used to run the simulation
-	* @param myWorkStealingThreadPool - the Wo  rkStealingThreadPool which will be used by the simulator
-	*/
-	public static void attachWorkStealingThreadPool(WorkStealingThreadPool myWorkStealingThreadPool){
-		pool = myWorkStealingThreadPool;
-	}
+    /**
+     * attach a WorkStealingThreadPool to the Simulator, this WorkStealingThreadPool will be used to run the simulation
+     *
+     * @param myWorkStealingThreadPool - the Wo  rkStealingThreadPool which will be used by the simulator
+     */
+    public static void attachWorkStealingThreadPool(WorkStealingThreadPool myWorkStealingThreadPool) {
+        pool = myWorkStealingThreadPool;
+    }
 
-	public static void main(String [] args){
-
+    public static void main(String[] args) {
         myWarehouse = new Warehouse();
 
-        //Read the configuration file and turn into a java object (MainOrder Object(
+        //Read the configuration file and turn into a java object (MainOrder Object)
         Gson gson = new Gson();
         try {
             myConfiguration = gson.fromJson(new FileReader(args[0]), MainOrder.class);
@@ -134,32 +108,29 @@ public class Simulator {
             System.out.println("Configuration file not found.");
         }
 
-
         //Add tools to warehouse
-        for(MainOrder.Tools tool: myConfiguration.tools){
-        switch(tool.tool){
-            case "np-hammer":
-                myWarehouse.addTool(new NextPrimeHammer(),Integer.parseInt(tool.qty));
-                break;
-            case "rs-pliers":
-                myWarehouse.addTool(new RandomSumPliers(),Integer.parseInt(tool.qty));
-                break;
-            case "gs-driver":
-                myWarehouse.addTool(new GcdScrewDriver(),Integer.parseInt(tool.qty));
-                break;
-        }
+        for (MainOrder.Tools tool : myConfiguration.tools) {
+            switch (tool.tool) {
+                case "np-hammer":
+                    myWarehouse.addTool(new NextPrimeHammer(), Integer.parseInt(tool.qty));
+                    break;
+                case "rs-pliers":
+                    myWarehouse.addTool(new RandomSumPliers(), Integer.parseInt(tool.qty));
+                    break;
+                case "gs-driver":
+                    myWarehouse.addTool(new GcdScrewDriver(), Integer.parseInt(tool.qty));
+                    break;
+            }
         }
 
         //Add plans to warehouse
-        for(ManufactoringPlan plan: myConfiguration.plans){
+        for (ManufactoringPlan plan : myConfiguration.plans) {
             myWarehouse.addPlan(plan);
         }
 
 
         //will eventually contain all the products that were made
-        ConcurrentLinkedQueue<Product> SimulationResult;
-
-        SimulationResult = Simulator.start();
+        ConcurrentLinkedQueue<Product> SimulationResult = Simulator.start();
 
         //Writing result to an output file
         FileOutputStream fout;

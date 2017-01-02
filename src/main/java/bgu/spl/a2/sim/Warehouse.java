@@ -38,9 +38,9 @@ public class Warehouse {
 
 	private ConcurrentLinkedQueue<ManufactoringPlan> manufactoringPlansList ;
 
-    private Object lockGcd = new Object();
-    private Object lockNpm = new Object();
-    private Object lockRph = new Object();
+    private final Object lockGcd = new Object();
+    private final Object lockNpm = new Object();
+    private final Object lockRph = new Object();
 	/**
 	 * Constructor
 	 */
@@ -57,6 +57,11 @@ public class Warehouse {
 	/**
 	 * Tool acquisition procedure
 	 * Note that this procedure is non-blocking and should return immediatly
+     *
+     * We used synchronized here because the term of actions is depending on each one of the tools counter,
+     * That is why we had to create lock for each one of the cases, not letting other threads to change their value while we
+     * use it
+     *
 	 * @param type - string describing the required tool
 	 * @return a deferred promise for the  requested tool
 	 */
@@ -64,7 +69,7 @@ public class Warehouse {
 			Deferred<Tool> newTool = new Deferred<>();
 			switch (type) {
 				case "np-hammer":
-				    synchronized (lockNpm) {
+                    synchronized (lockNpm) {
                         if (nextPrimeHammerToolCount.get() != 0) {
                             nextPrimeHammerToolCount.decrementAndGet();
                             newTool.resolve(new NextPrimeHammer());
@@ -92,13 +97,19 @@ public class Warehouse {
                     }
 					break;
 			}
-		//	System.out.println("gcdScrewDriver : " + gcdScrewDriverToolCount.get() + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount.get() + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount.get());
 			return newTool;
 		}
 
 	/**
 	 * Tool return procedure - releases a tool which becomes available in the warehouse upon completion.
-	 * @param tool - The tool to be returned
+     *
+     *
+     * We used synchronized here because the term of actions is depending on each one of the tools counter,
+     * That is why we had to create lock for each one of the cases, not letting other threads to change their value while we
+     * use it
+     *
+     *
+     * @param tool - The tool to be returned
 	 */
 	public void releaseTool(Tool tool) {
 			Deferred<Tool> tempDeff;
@@ -134,7 +145,6 @@ public class Warehouse {
                     }
 					break;
 			}
-		//	System.out.println("release-gcdScrewDriver : " + gcdScrewDriverToolCount.get() + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount.get() + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount.get());
 		}
 
 

@@ -28,6 +28,7 @@ public class MainOrder {
         String tool;
         String qty;
     }
+
     //Main Order Fields
     ManufactoringPlan[] plans;
     Tools[] tools;

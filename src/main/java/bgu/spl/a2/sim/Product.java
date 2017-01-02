@@ -43,9 +43,7 @@ public class Product implements java.io.Serializable{
 	* final ID is the ID the product received as the sum of all UseOn(){} 
 	*/
 		public long getFinalId(){
-		//	synchronized (this) {
-				return currentId;
-		  //  }
+			return currentId;
 		}
 
 	/**
@@ -66,7 +64,7 @@ public class Product implements java.io.Serializable{
 	/**
 	 * set the current id of a product ,
 	 * @param id - id to be added to the current id of the product
-	 * This method have to be synchronized because its relay on the currentId that can be change
+	 * This method have to be synchronized because it's relay on the currentId that can be change
 	 *			inside this method. if two objects change the currentId  of a product at the same time using this method,
 	 *		    there is a chance that without synchronized , only one of the changes will apply.
 	 */
