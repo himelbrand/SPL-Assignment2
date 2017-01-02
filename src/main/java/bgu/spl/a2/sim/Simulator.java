@@ -8,8 +8,10 @@ import bgu.spl.a2.sim.tools.NextPrimeHammer;
 import bgu.spl.a2.sim.tools.RandomSumPliers;
 import java.io.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import com.google.gson.Gson;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.gson.Gson;
+import com.sun.corba.se.spi.ior.ObjectKey;
 
 
 /**
@@ -20,7 +22,7 @@ public class Simulator {
 	public static Warehouse myWarehouse;
 	private static WorkStealingThreadPool pool;
 	private static MainOrder myConfiguration;
-    private static volatile  int ordersCount = 0;
+    private static volatile AtomicInteger ordersCount = new AtomicInteger(0);
     private static Product[] orderProductArray;
 
 	/**
@@ -47,7 +49,7 @@ public class Simulator {
 
     	    for(MainOrder.Waves order:wave) {
 
-    	          ordersCount += Integer.parseInt(order.qty);
+    	          ordersCount.addAndGet(Integer.parseInt(order.qty));
 
     	        for(int  i=0;i<Integer.parseInt(order.qty);i++) {
                     ManufatoringTask orderTask = new ManufatoringTask(order.product, Long.parseLong(order.startId) + i);
@@ -56,9 +58,9 @@ public class Simulator {
                     long tempOrderId = Long.parseLong(order.startId);
                     orderTask.getResult().whenResolved(()->{
                         orderProductArray[firstIndexCopy + (int)(orderTask.getResult().get().getStartId() - tempOrderId)] = orderTask.getResult().get();
-                        ordersCount--;
-                        System.out.println("###########  created a :"+orderTask.getResult().get().getName()+"  ###############");
-                        if(ordersCount == 0){
+                      //   System.out.println(ordersCount);
+                        if(ordersCount.decrementAndGet() == 0){
+                            System.out.println("unlock wave");
                             //We use synchronized so only one wave will be produced at a time
                             synchronized (lock) {
                                 lock.notifyAll();
@@ -76,8 +78,22 @@ public class Simulator {
             //We use synchronized so only one wave will be produced at a time
             synchronized (lock) {
                 try {
+                    Thread t1 = new Thread(()->{
+                        while(!Thread.currentThread().isInterrupted()) {
+                            try {
+                                System.out.println("sleep");
+                                Thread.currentThread().sleep(1000);
+                            } catch (InterruptedException e) {
+                                System.out.println("interrupted ");
+                               Thread.currentThread().interrupt();
+                            }
+                            System.out.println(pool.getStatus());
+                        }
+                    });
+                   // t1.start();
                     System.out.println("wave is locked");
                     lock.wait();
+                //    t1.interrupt();
                 } catch (InterruptedException e) {
                     System.out.println("moving to next wave");
                 }

@@ -51,7 +51,10 @@ public class VersionMonitor {
     public void await(int version) throws InterruptedException {
         synchronized (lock){
             while(version == getVersion()){
+              //  System.out.println(Thread.currentThread().getName() + " enter waiting");
                 lock.wait();
+              //  System.out.println(Thread.currentThread().getName() + " exit waiting");
+
             }
         }
     }

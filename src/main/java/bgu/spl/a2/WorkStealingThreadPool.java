@@ -34,7 +34,7 @@ public class WorkStealingThreadPool {
                 }
             }
             if(myCheckIfSteal) {
-                System.out.println("Thread-" + processorId + " took " +myDequeTasksArray[processorId].size() + "tasks");
+             //   System.out.println("Thread-" + processorId + " took " +myDequeTasksArray[processorId].size() + "tasks");
                 break;
             }
             queueIdVictim = (queueIdVictim + 1) % myDequeTasksArray.length;
@@ -108,6 +108,10 @@ public class WorkStealingThreadPool {
         for(int i=0;i<myProcessorArray.length;i++){
             myThreadsArray[i].start();
         }
+    }
+
+    public String getStatus(){
+        return (myDequeTasksArray[0].size() + "  " + myDequeTasksArray[1].size() + "  waiting : " + myProcessorArray[0].waitingTask.size() + "  " + myProcessorArray[1].waitingTask.size() ); //"  " + myDequeTasksArray[2].size() + "  " + myDequeTasksArray[3].size() + "  ");
     }
 
 }

@@ -38,6 +38,9 @@ public class Warehouse {
 
 	private ConcurrentLinkedQueue<ManufactoringPlan> manufactoringPlansList ;
 
+    private Object lockGcd = new Object();
+    private Object lockNpm = new Object();
+    private Object lockRph = new Object();
 	/**
 	 * Constructor
 	 */
@@ -46,11 +49,11 @@ public class Warehouse {
 		nextPrimeHammerDeferredList = new ConcurrentLinkedQueue<>();
 		randomSumPliersDeferredList = new ConcurrentLinkedQueue<>();
 		manufactoringPlansList = new ConcurrentLinkedQueue<>();
-		gcdScrewDriverToolCount = new AtomicInteger(0);
+        gcdScrewDriverToolCount = new AtomicInteger(0);
 		nextPrimeHammerToolCount= new AtomicInteger(0);
 		randomSumPliersHammerToolCount= new AtomicInteger(0);
-	}
 
+	}
 	/**
 	 * Tool acquisition procedure
 	 * Note that this procedure is non-blocking and should return immediatly
@@ -61,29 +64,35 @@ public class Warehouse {
 			Deferred<Tool> newTool = new Deferred<>();
 			switch (type) {
 				case "np-hammer":
-					if (nextPrimeHammerToolCount.get() != 0) {
-						nextPrimeHammerToolCount.decrementAndGet();
-						newTool.resolve(new NextPrimeHammer());
-					} else
-						nextPrimeHammerDeferredList.add(newTool);
+				    synchronized (lockNpm) {
+                        if (nextPrimeHammerToolCount.get() != 0) {
+                            nextPrimeHammerToolCount.decrementAndGet();
+                            newTool.resolve(new NextPrimeHammer());
+                        } else
+                            nextPrimeHammerDeferredList.add(newTool);
+                    }
 					break;
 				case "rs-pliers":
-					if (randomSumPliersHammerToolCount.get() != 0) {
-						randomSumPliersHammerToolCount.decrementAndGet();
-						newTool.resolve(new RandomSumPliers());
-					} else
-						randomSumPliersDeferredList.add(newTool);
-					break;
+                    synchronized (lockRph) {
+                        if (randomSumPliersHammerToolCount.get() != 0) {
+                            randomSumPliersHammerToolCount.decrementAndGet();
+                            newTool.resolve(new RandomSumPliers());
+                        } else
+                            randomSumPliersDeferredList.add(newTool);
+                    }
+                        break;
 				case "gs-driver":
-					if (gcdScrewDriverToolCount.get() != 0) {
-						gcdScrewDriverToolCount.decrementAndGet();
-						newTool.resolve(new GcdScrewDriver());
-					} else {
-						gcdScrewDriverDeferredList.add(newTool);
-					}
+				    synchronized (lockGcd) {
+                        if (gcdScrewDriverToolCount.get() != 0) {
+                            gcdScrewDriverToolCount.decrementAndGet();
+                            newTool.resolve(new GcdScrewDriver());
+                        } else {
+                            gcdScrewDriverDeferredList.add(newTool);
+                        }
+                    }
 					break;
 			}
-			System.out.println("gcdScrewDriver : " + gcdScrewDriverToolCount.get() + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount.get() + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount.get());
+		//	System.out.println("gcdScrewDriver : " + gcdScrewDriverToolCount.get() + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount.get() + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount.get());
 			return newTool;
 		}
 
@@ -95,32 +104,37 @@ public class Warehouse {
 			Deferred<Tool> tempDeff;
 			switch (tool.getType()) {
 				case "np-hammer":
-					nextPrimeHammerToolCount.incrementAndGet();
-					tempDeff = nextPrimeHammerDeferredList.poll();
-					if (tempDeff != null) {
-						nextPrimeHammerToolCount.decrementAndGet();
-						tempDeff.resolve(new NextPrimeHammer());
-
-					}
+				    synchronized (lockNpm) {
+                        nextPrimeHammerToolCount.incrementAndGet();
+                        tempDeff = nextPrimeHammerDeferredList.poll();
+                        if (tempDeff != null) {
+                            nextPrimeHammerToolCount.decrementAndGet();
+                            tempDeff.resolve(new NextPrimeHammer());
+                        }
+                    }
 					break;
 				case "rs-pliers":
-					randomSumPliersHammerToolCount.incrementAndGet();
-					tempDeff = randomSumPliersDeferredList.poll();
-					if (tempDeff != null) {
-						randomSumPliersHammerToolCount.decrementAndGet();
-						tempDeff.resolve(new RandomSumPliers());
-					}
+                    synchronized (lockRph) {
+                        randomSumPliersHammerToolCount.incrementAndGet();
+                        tempDeff = randomSumPliersDeferredList.poll();
+                        if (tempDeff != null) {
+                            randomSumPliersHammerToolCount.decrementAndGet();
+                            tempDeff.resolve(new RandomSumPliers());
+                        }
+                    }
 					break;
 				case "gs-driver":
-					gcdScrewDriverToolCount.incrementAndGet();
-					tempDeff = gcdScrewDriverDeferredList.poll();
-					if (tempDeff != null) {
-						gcdScrewDriverToolCount.decrementAndGet();
-						tempDeff.resolve(new GcdScrewDriver());
-					}
+                    synchronized (lockGcd) {
+                        gcdScrewDriverToolCount.incrementAndGet();
+                        tempDeff = gcdScrewDriverDeferredList.poll();
+                        if (tempDeff != null) {
+                            gcdScrewDriverToolCount.decrementAndGet();
+                            tempDeff.resolve(new GcdScrewDriver());
+                        }
+                    }
 					break;
 			}
-			System.out.println("gcdScrewDriver : " + gcdScrewDriverToolCount.get() + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount.get() + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount.get());
+		//	System.out.println("release-gcdScrewDriver : " + gcdScrewDriverToolCount.get() + " | " + "randomSumPliersHammer : " + randomSumPliersHammerToolCount.get() + " | " + "nextPrimeHammer : " + nextPrimeHammerToolCount.get());
 		}
 
 
@@ -165,5 +179,6 @@ public class Warehouse {
 		}
 
 	}
+
 
 }

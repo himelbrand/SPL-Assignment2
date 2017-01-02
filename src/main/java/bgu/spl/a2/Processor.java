@@ -70,13 +70,14 @@ public class Processor implements Runnable {
             }else{//else try to steal from other queues
                 boolean stole = pool.stealTasks(id);
                 if(!stole) {
+                    int currentVersion = pool.myVersionMonitor.getVersion();
                     currentTask = pool.myDequeTasksArray[id].pollFirst();
                     if (currentTask != null) {//didn't steal but have work in queue , handle task
                         waitingTask.addFirst(currentTask);
                         currentTask.handle(this);
                     } else {
                         try {//didn't steal and have no work in queue , await
-                            pool.myVersionMonitor.await(pool.myVersionMonitor.getVersion());
+                            pool.myVersionMonitor.await(currentVersion);
                         } catch (InterruptedException e) {
                             running = false;
                         }
